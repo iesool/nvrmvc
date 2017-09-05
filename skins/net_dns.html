@@ -1,0 +1,78 @@
+<h3>
+  <table border="0" width="100%">
+    <tr>
+      <td align="left"><span class="word_net_dns">DNS设置</span></td>
+      <td align="right"><a href="javascript:;" onClick="main_load('net_dns')"><span class="word_refresh">刷新</span></a></td>
+    </tr>
+  </table>
+</h3>
+
+<div>
+  <form id="form_dns">
+    <table>
+      <tr>
+        <td><span class="word_net_host_name">主机名称</span></td>
+        <td><input type="text" id="hostname" name="hostname" value="" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_net_dns_server">DNS服务器</span></td>
+        <td><input type="text" id="dnsmask1" name="dnsmask1" value="" />&nbsp;<span class="word_net_dns_first">（首选）</span></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><input type="text" id="dnsmask2" name="dnsmask2" value="" />&nbsp;<span class="word_net_dns_second">（备用）</span></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><input type="text" id="dnsmask3" name="dnsmask3" value="" />&nbsp;<span class="word_net_dns_second">（备用）</span></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<div class="main_op">
+  <button id="dns_save"><span class="word_save">保存</span></button>
+</div>
+
+<script type="text/javascript">
+language();
+
+$.getJSON("index.php?do=ajax&view=net_dns",function(dns_arr){
+	$("#hostname").val(dns_arr['hostname']);				
+	$("#dnsmask1").val(dns_arr['dnsmask1']);
+	$("#dnsmask2").val(dns_arr['dnsmask2']);
+	$("#dnsmask3").val(dns_arr['dnsmask3']);
+});
+$("#dns_save").button();
+$("#dns_save").click(function(){
+	var pattern = /^((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))$/;
+	if(!$("#hostname").val()){
+		alert(word['word_net_hostname_please']);
+		return false;
+	}
+	if($("#dnsmask1").val()&&!$("#dnsmask1").val().match(pattern)){
+		alert(word['word_net_dns_format_false']);
+		return false;
+	}
+	if($("#dnsmask2").val()&&!$("#dnsmask2").val().match(pattern)){
+		alert(word['word_net_spare_dns_format_false']);
+		return false;
+	}
+	if($("#dnsmask3").val()&&!$("#dnsmask3").val().match(pattern)){
+		alert(word['word_net_spare_dns_format_false']);
+		return false;
+	}
+	$.post("index.php?do=ajax&view=net_dns&op=set_dns",$("#form_dns").serialize());
+	//alert("设置成功！重启网络服务后生效！");
+	//main_load("net_dns");
+	$(".main").html("<img src='images/ajax-loader.gif' />");								   
+	var back_info=$.ajax({url:"../index.php?do=ajax&view=net_restart",async:false});
+	if(back_info.responseText==1){
+		alert(word['word_success']);
+	}else{
+		alert(word['word_failed']);
+	}
+	window.location.reload();
+});
+</script>
+

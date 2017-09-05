@@ -1,0 +1,260 @@
+<h3>
+  <table border="0" width="100%">
+    <tr>
+      <td align="left"><span class="word_monitor_list">前端设备列表</span>&nbsp;<a href="javascript:;" id="monitor_creat"><span class="word_monitor_creat">添加前端设备</span></a></td>
+      <td align="right"><a href="javascript:;" onClick="main_load('monitor_list')"><span class="word_refresh">刷新</span></a></td>
+    </tr>
+  </table>
+</h3>
+
+<form id="form_edit">
+  <table border="0" class="main_table">
+    <thead>
+      <tr>
+        <th width="5%"><a href="javascript:;" onClick="list_sort('monitor','Id')"><span class="word_id">Id</span></a>&nbsp;<span id="monitor_Id"></span></th>
+        <th width="15%"><a href="javascript:;" onClick="list_sort('monitor','Name')"><span class="word_name">名称</span></a>&nbsp;<span id="monitor_Name"></span></th>
+        <th width="15%"><a href="javascript:;" onClick="list_sort('monitor','Mgroup')"><span class="word_monitor_group">所属组</span></a>&nbsp;<span id="monitor_Mgroup"></span></th>
+        <th width="15%"><a href="javascript:;" onClick="list_sort('monitor','Function')"><span class="word_state">状态</span></a>&nbsp;<span id="monitor_Function"></span></th>
+        <th width="10%"><span class="word_space">存储空间</span></th>
+        <th width="10%"><a href="javascript:;" onClick="list_sort('monitor','Ip')"><span class="word_ip">IP地址</span></a>&nbsp;<span id="monitor_Ip"></span></th>
+        <th width="10%"><span class="word_monitor_record_num">录像个数</span></th>
+        <th width="15%"><span class="word_operation">操作</span></th>
+        <th width="5%"><input type="checkbox" onclick="check_all(this,'form_edit')" /></th>
+      </tr>
+    </thead>
+    <tbody id="monitor_table"><tr><td colspan="9"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+  </table>
+</form>
+<div class="page" id="monitor_page_banner"></div>
+
+<div class="main_op">
+  <button onClick="pop_div(800,600,word['word_monitor_discover'],'monitor_discover')"><span class="word_monitor_discover">设备发现</span></button>
+  <button onClick="muti_op(2)"><span class="word_delete">删除</span></button>
+  <button onClick="muti_op(5)"><span class="word_monitor_event_plan">录像计划</span></button>
+  <button onClick="muti_op(1)"><span class="word_monitor_record_stop">停止录像</span></button>
+  <button onClick="muti_op(0)"><span class="word_monitor_record_start">开始录像</span></button>
+  <button onClick="muti_op(4)"><span class="word_monitor_muti">多路查看</span></button>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();					   
+						   
+	$("button").button();
+	
+	//获取监视器列表
+	table_load("monitor","Id","index.php?do=ajax&view=monitor_list&op=get_monitor_list");
+		
+	//新建监视器
+	$("#monitor_creat").click(function(){
+		pop_div(360,450,word['word_monitor_creat'],"monitor_creat");							   
+	});
+});
+
+
+//批量操作
+function muti_op(op){
+	if(!$("#form_edit").serialize()){
+		alert(word['word_monitor_choose']);
+		return false;
+	}
+	
+	check_cookie();//设置复选框cookie
+	
+	monitor_op(op,$("#form_edit").serialize(),"muti");
+}
+
+//设置复选框cookie
+function check_cookie(){
+	var mid_arr=new Array();
+	/*var form_edit=document.getElementById('form_edit');
+	for(var i=0;i<form_edit.edit_arr.length;i++){
+		if(form_edit.edit_arr[i].checked){
+			mid_arr.push(form_edit.edit_arr[i].value);
+		}
+	}*/
+	$("#form_edit #edit_arr").each(function(){
+		if($(this).attr('checked')){
+			mid_arr.push($(this).val());
+		}
+	});
+	var mid_str=mid_arr.join(",");
+	setCookie("mid_str",mid_str,30);
+}
+
+
+//监视器操作
+function monitor_op(op,mid,type,other,position){
+	switch(op){
+		//监视器开始录像
+		case 0:
+		  var conf=word['word_monitor_control_confirm_0'];
+		break;
+		
+		//监视器停止录像
+		case 1:
+		  var conf=word['word_monitor_control_confirm_1'];
+		break;
+		
+		//删除监视器
+		case 2:
+		  var conf=word['word_monitor_control_confirm_2'];
+		break;
+		
+		//修改监视器跳出
+		case 3:
+		  $("#main").append("<input type='hidden' id='edit_mid' value='"+mid+"' />");
+		  pop_div(360,450,word['word_monitor_edit'],"monitor_edit",position);
+		break;
+		
+		//多路查看跳出
+		case 4:
+		  pop_div(330,430,word['word_monitor_muti'],"monitor_muti");
+		break;
+		
+		//工作日录像
+		case 5:
+		  pop_div(320,150,word['word_monitor_event_plan'],"monitor_plan");
+		break;
+	}
+	
+	//0,1,2才走到这一步：发送操作请求
+	if(conf&&confirm(conf)){
+		if(type=="muti"){
+			var mid_str=mid;
+		}else{
+			var mid_str="markMids[]="+mid;
+		}
+		$.post("index.php?do=ajax&view=monitor_list&op=monitor_control&control="+op,mid_str,function(backinfo){
+			if(backinfo){																									 
+				alert(backinfo);
+			}
+		});
+		/*$.ajax({
+			url:"index.php?do=ajax&view=monitor_list&op=monitor_control&control="+op,
+			async:false,
+			type:'POST',
+			data:mid_str,
+			success:function(backinfo){
+				if(backinfo){																									 
+					alert(backinfo);
+				}
+			}
+		})*/
+		main_load("monitor_list");
+		if(other){
+			return true;
+		}
+	}else{
+		if(other){
+			return false;
+		}
+	}
+}
+
+//录像列表
+function event_list(mid,mname,start_time,end_time){
+	var url=encodeURI("index.php?do=ajax&view=monitor_list&op=get_event_list&mid="+mid+"&mname="+mname);
+		
+	$("#main").append("<input type='hidden' id='events_list_mid' value='"+mid+"' />");
+	$("#main").append("<input type='hidden' id='events_list_mname' value='"+mname+"' />");
+	$("#main").append("<input type='hidden' id='events_list_url' value='"+url+"' />");
+	
+	pop_div(820,450,word['word_monitor_event_list']+" - "+mname,"monitor_events_list");
+}
+
+
+//实时和录像播放（包括单路和多路）
+function monitor_pop(type,muti,mid_str,mname){
+	var url="index.php?do=ajax&view=monitor_list&op=monitor_iframe&type="+type+"&muti="+muti+"&mid_str="+mid_str+"&width_fix="+$("#width_fix").val()+"&height_fix="+$("#height_fix").val();
+	
+	if(!$("#hide_bar").attr("checked")){
+		url+="&hide_bar=1";
+	}else{
+		url+="&hide_bar=0";
+	}
+
+	if($("#turn_time").val()){
+		url+="&turn_time="+$("#turn_time").val();
+	}
+	
+	if($("#eid_str").val()){
+		url+="&eid_str="+$("#eid_str").val();
+	}
+	
+	if($("#start_time").val()){
+		url+="&start_time="+$("#start_time").val();
+	}
+	
+	if($("#end_time").val()){
+		url+="&end_time="+$("#end_time").val();
+	}
+	
+	//根据客户端显示器分辨率的宽来判断弹出层的宽；弹出层高是固定的，不同的弹出层宽度决定不同的比例
+	switch(screen.width){
+		//适用于1024*768的15或17英寸的比例为4:3的CRT显示器
+		case 1024:
+			var pop_width=852;
+			var vlc_width=600;
+		break;
+		
+		case 1152:
+			var pop_width=852;
+			var vlc_width=600;
+		break;
+		
+		case 1280:
+			var pop_width=852;
+			var vlc_width=600;
+		break;
+		
+		//适用于1440*900的19英寸和1680*1050的22英寸的比例为16:10的液晶显示器
+		case 1440:
+			var pop_width=972;
+			var vlc_width=720;
+		break;
+		
+		case 1680:
+			var pop_width=972;
+			var vlc_width=720;
+		break;
+		
+		//适用于1366*768的笔记本，1920*1080的21.5,23英寸和2560*1440的27英寸的比例为16:9液晶屏
+		case 1366:
+			var pop_width=1052;
+			var vlc_width=800;
+		break;
+		
+		case 1920:
+			var pop_width=1052;
+			var vlc_width=800;
+		break;
+
+		case 2560:
+			var pop_width=1052;
+			var vlc_width=800;
+		break;
+
+		default:
+			var pop_width=1052;
+			var vlc_width=800;
+		break;
+	}
+	url+="&pop_width="+pop_width+"&vlc_width="+vlc_width;
+	
+	//如果是单路就是弹出层，如果是多路就是弹出窗口
+	if(muti==1||!muti){
+		$("#main").append("<input type='hidden' id='frame_src' value='"+url+"' />");//将iframe请求路径置入隐藏域传给弹出层
+		
+		if(type=="watch"){
+			var title=word['word_monitor_watch']+" - "+mname;
+		}else{
+			var title=word['word_monitor_event']+" - "+mname;
+		}
+		pop_div(pop_width,600,title,"monitor_pop");	
+	}else{
+		var time=new Date().getTime();//获取随机时间
+		window.open(url,"muti"+time,"resizable=yes,scrollbars=yes,fullscreen=yes");
+	}
+}
+</script>

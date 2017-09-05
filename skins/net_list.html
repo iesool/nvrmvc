@@ -1,0 +1,481 @@
+<h3>
+  <table border="0" width="100%">
+    <tr>
+      <td align="left"><span class="word_net_list">网卡设置</span>&nbsp;<a href="javascript:;" id="net_bond"><span class="word_net_bond">网卡绑定</span></a></td>
+      <td align="right"><a href="javascript:;" onClick="main_load('net_list')"><span class="word_refresh">刷新</span></a></td>
+    </tr>
+  </table>
+</h3>
+
+<div>
+  <table border="0" width="100%" class="main_table">
+    <thead>
+      <tr>
+        <th><span class="word_name">网卡名称</span></th>
+        <th><span class="word_type">网卡类型</span></th>
+        <th><span class="word_ip">IP地址</span></th>
+        <th><span class="word_net_mask">子网掩码</span></th>
+        <th><span class="word_net_active">启动时激活</span></th>
+      </tr>
+    </thead>
+    <tbody id="netcard_table"><tr><td colspan="5"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+  </table>
+</div>
+
+<div class="main_op">
+  <!--<input type="button" value="保存" id="net_save" />-->
+  <button id="net_save"><span class="word_save">保存</span></button>
+</div>
+
+<div id="pop_netcard" class="pop_div">
+  <form id="form_netcard">
+    <input type="hidden" name="netcard_fullname" id="netcard_fullname" value="" />
+    <table width="100%" cellpadding="5">
+      <tr>
+        <td><span class="word_name">名称</span></td>
+        <td id="netcard_name"></td>
+      </tr>
+      <tr>
+        <td><span class="word_net_active">启动时激活</span></td>
+        <td>
+          <input type="radio" name="up" id="up1" value="1">&nbsp;<span id="yes">是</span> &nbsp;
+          <input type="radio" name="up" id="up0" value="0">&nbsp;<span id="no">否</span>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="word_net_ip_setting">IP设置</span></td>
+        <td>
+          <select name="ip_mode" id="ip_mode">
+            <!--<option value="1"><span class="word_net_ip_diy">指定IP</span></option>
+            <option value="0"><span class="word_net_ip_dhcp">DHCP</span></option>-->
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="word_ip"IP地址</span></td>
+        <td><input type="text" name="address" id="address" value="" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_net_mask">子网掩码</span></td>
+        <td><input type="text" name="netmask" id="netmask" value="" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_net_gateway">网关</span></td>
+        <td><input type="text" name="gateway" id="gateway" value="" /></td>
+      </tr>
+      
+      <tr>
+        <td><span class="word_net_virtual">虚拟接口</span></td>
+        <td><span id="virtual_count"></span>&nbsp;<span id="virtual_add"></span></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<div id="pop_virtual" class="pop_div">
+  <form id="form_virtual">
+    <input type="hidden" name="virtual_index" id="virtual_index" value="" />
+    <input type="hidden" name="virtual_first_name" id="virtual_first_name" value="" />
+    <input type="hidden" name="virtual_last_name_2" id="virtual_last_name_2" value="" />
+    <table width="100%" cellpadding="5">
+      <tr>
+        <td><span class="word_name">名称</span></td>
+        <td><span id="virtual_name"></span>:&nbsp;<input type="text" name="virtual_last_name" id="virtual_last_name" size="5" value="" onKeyUp="this.value=this.value.replace(/[^\d]/g,'')" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_net_active">启动时激活</span></td>
+        <td>
+          <input type="radio" name="virtual_up" id="virtual_up1" value="1" checked>&nbsp;<span class="word_yes">是</span> &nbsp;
+          <input type="radio" name="virtual_up" id="virtual_up0" value="0">&nbsp;<span class="word_no">否</span>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="word_ip">IP地址</span></td>
+        <td><input type="text" name="virtual_address" id="virtual_address" value="" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_net_mask">子网掩码</span></td>
+        <td><input type="text" name="virtual_netmask" id="virtual_netmask" value="" /></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<div id="pop_netbond" class="pop_div">
+  <form id="form_bond">
+    <table border="0" cellpadding="3" width="100%">
+      <tr>
+        <td width="35%"><span class="word_net_bond_type">绑定模式</span></td>
+        <td>
+          <select name="mode" id="mode">
+            <option value="0">Balance Round-Robin</option>
+            <option value="1">Active Backup</option>
+            <option value="2">Balance - XOR</option>
+            <option value="3">Broadcast</option>
+            <option value="4">802.3ad</option>
+            <option value="5">Balance-tlb</option>
+            <option value="6" selected="selected">Balance-alb</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="word_net_card_list">选择网卡</span></td>
+        <td>
+          <select name="netcard_list[]" id="netcard_list" size="5" multiple="multiple" style="width:100%"></select>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="word_net_bond_ip">设定IP为网卡</span></td>
+        <td>
+          <select name="whichip" id="whichip"></select>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	//获取网卡列表
+	get_table("netcard","index.php?do=ajax&view=net_list",word['word_none']);
+	
+	//获取网卡绑定中的未绑定网卡列表
+	$.getJSON("index.php?do=ajax&view=net_list&op=get_netcard_list",function(netcard_list_arr){
+		var netcard_list=document.getElementById('netcard_list');
+		netcard_list.options.length=0;
+		for(i in netcard_list_arr){
+			netcard_list.options[netcard_list.length]=new Option(netcard_list_arr[i],netcard_list_arr[i]);
+		}
+	});	
+	//获取网卡绑定中的网卡IP列表
+	$.getJSON("index.php?do=ajax&view=net_list&op=get_whichip",function(whichip_arr){
+		var whichip=document.getElementById('whichip');
+		whichip.options.length=0;
+		for(i in whichip_arr){
+			whichip.options[whichip.length]=new Option(whichip_arr[i],whichip_arr[i]);
+		}
+	});	
+	
+	
+	//ip设置改变
+	$("#ip_mode").change(function(){
+		if($("#ip_mode").val()==0){
+			$("#address").attr("disabled",true);
+			$("#netmask").attr("disabled",true);
+			$("#gateway").attr("disabled",true);
+		}else{
+			$("#address").attr("disabled",false);
+			$("#netmask").attr("disabled",false);
+			$("#gateway").attr("disabled",false);
+		}
+	});
+	
+	
+	//网卡绑定链接
+	$("#net_bond").click(function(){
+		$("#form_bond").resetForm();
+		$("#pop_netbond").dialog("open");						  
+	});
+	
+	//保存配置
+	$("#net_save").button();
+	$("#net_save").click(function(){
+		$(".main").html("<img src='images/ajax-loader.gif' />");								   
+		var back_info=$.ajax({url:"../index.php?do=ajax&view=net_restart",async:false});
+		if(back_info.responseText==1){
+			alert(word['word_success']);
+		}else{
+			alert(word['word_failed']);
+		}
+		window.location.reload();
+	});
+	
+	if(word['word_accept']=='确定'){
+		//弹出层
+		$("#pop_netcard").dialog({
+			height: 370,
+			width: 350,
+			title:word['word_net_list'],
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					netcard_enter();
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_virtual").dialog({
+			height: 280,
+			width: 350,
+			title:word['word_net_virtual'],
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					if($("#virtual_index").val()){
+						virtual_enter("edit");
+					}else{
+						virtual_enter("creat");
+					}
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_netbond").dialog({
+			height: 300,
+			width: 350,
+			title:word['word_net_bond'],
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					bond_enter();
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+	
+	}else{
+		
+		//弹出层
+		$("#pop_netcard").dialog({
+			height: 370,
+			width: 350,
+			title:word['word_net_list'],
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					netcard_enter();
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_virtual").dialog({
+			height: 280,
+			width: 350,
+			title:word['word_net_virtual'],
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					if($("#virtual_index").val()){
+						virtual_enter("edit");
+					}else{
+						virtual_enter("creat");
+					}
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_netbond").dialog({
+			height: 300,
+			width: 350,
+			title:word['word_net_bond'],
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					bond_enter();
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		
+	}
+});
+	
+
+
+//编辑网卡链接
+function netcard(index){
+	$("#form_netcard").clearForm();
+	$.getJSON("index.php?do=ajax&view=net_list&op=get_netcard_arr&index="+index,function(netcard_arr){
+		$("#netcard_fullname").val(netcard_arr['fullname']);																							
+		$("#netcard_name").html(netcard_arr['fullname']);
+		if(netcard_arr['up']=="yes"){
+			$("#up1").attr("checked",true);
+		}else{
+			$("#up0").attr("checked",true);
+		}
+		if(netcard_arr['dhcp']=="yes"){
+			//$("#ip_mode").val(0);
+			$("#ip_mode").html("<option value=1>"+word['word_net_ip_diy']+"</option><option value=0 selected>"+word['word_net_ip_dhcp']+"</option>");
+			$("#address").attr("disabled",true);
+			$("#netmask").attr("disabled",true);
+			$("#gateway").attr("disabled",true);
+		}else{
+			//$("#ip_mode").val(1);
+			$("#ip_mode").html("<option value=1 selected>"+word['word_net_ip_diy']+"</option><option value=0>"+word['word_net_ip_dhcp']+"</option>");
+			$("#address").attr("disabled",false);
+			$("#netmask").attr("disabled",false);
+			$("#gateway").attr("disabled",false);
+		}
+		$("#address").val(netcard_arr['address']);
+		$("#netmask").val(netcard_arr['netmask']);
+		$("#gateway").val(netcard_arr['gateway']);
+		
+		$("#virtual_count").html(netcard_arr['vcount']);
+		$("#virtual_add").html("<a href=javascript:; onclick=virtual_add('"+netcard_arr['fullname']+"')>"+word['word_net_virtual_add']+"</a>");
+	});
+	$("#pop_netcard").dialog("open");
+}
+//添加虚拟接口链接
+function virtual_add(name){
+	$("#pop_netcard").dialog("close"); 
+	$("#form_virtual").resetForm();
+	$("#virtual_name").html(name);
+	$("#virtual_first_name").val(name);
+	$("#virtual_last_name").attr("disabled",false);
+	$("#pop_virtual").dialog("open"); 
+}
+//编辑虚拟接口链接
+function virtual_edit(name,index){
+	$("#form_virtual").clearForm();
+	var a=name.split(":");
+	$("#virtual_name").html(a[0]);
+	$("#virtual_first_name").val(a[0]);
+	$("#virtual_last_name").val(a[1]);
+	$("#virtual_last_name_2").val(a[1]);
+	$("#virtual_last_name").attr("disabled",true);
+	$("#virtual_index").val(index);
+	$.getJSON("index.php?do=ajax&view=net_list&op=get_virtual_arr&name="+name+"&index="+index,function(virtual_arr){
+		if(virtual_arr['up']=="yes"){
+			$("#virtual_up1").attr("checked",true);
+		}else{
+			$("#virtual_up0").attr("checked",true);
+		}
+		$("#virtual_address").val(virtual_arr['address']);
+		$("#virtual_netmask").val(virtual_arr['netmask']);
+	});
+	$("#pop_virtual").dialog("open"); 
+}
+
+//确定编辑
+function netcard_enter(){
+	var pattern = /^((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))$/;
+	if($("#ip_mode").val()==1){
+		if(!$("#address").val()){
+			alert(word['word_ip_please']);
+			return false;
+		}
+		if(!$("#address").val().match(pattern)){
+			alert(word['word_ip_format_false']);
+			return false;
+		}
+		if(!$("#netmask").val()){
+			alert(word['word_net_netmask_please']);
+			return false;
+		}
+		if(!$("#netmask").val().match(pattern)){
+			alert(word['word_net_netmask_format_false']);
+			return false;
+		}
+		if($("#gateway").val()&&!$("#gateway").val().match(pattern)){
+			alert(word['word_net_gateway_format_false']);
+			return false;
+		}
+	}
+	//alert($("#form_netcard").serialize());
+	$.post("index.php?do=ajax&view=net_list&op=netcard",$("#form_netcard").serialize());
+	alert(word['word_net_save_to_work']);
+	$("#pop_netcard").dialog("close");
+	main_load("net_list");
+}
+//确定虚拟
+function virtual_enter(op){
+	var pattern = /^((([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))\.){3}(([0-9]?[0-9])|(1[0-9]{2})|(2[0-4][0-9])|(25[0-5]))$/;
+	if(!$("#virtual_last_name").val()){
+		alert(word['word_net_virtual_please']);
+		return false;
+	}
+	if($("#virtual_last_name").val()=="0"){
+		alert(word['word_net_virtual_not_0']);
+		return false;
+	}
+	if(op=="creat"){
+		var check=$.ajax({url:"index.php?do=ajax&view=net_list&op=virtual_name_check&first_name="+$("#virtual_first_name").val()+"&last_name="+$("#virtual_last_name").val(),async:false});
+		if(check.responseText==1){
+			alert(word['word_net_virtual_name_exists']);
+			return false;
+		}
+	}
+	if(!$("#virtual_address").val()){
+		alert(word['word_ip_please']);
+		return false;
+	}
+	if(!$("#virtual_address").val().match(pattern)){
+		alert(word['word_ip_format_false']);
+		return false;
+	}
+	if(!$("#virtual_netmask").val()){
+		alert(word['word_net_netmask_please']);
+		return false;
+	}
+	if(!$("#virtual_netmask").val().match(pattern)){
+		alert(word['word_net_netmask_format_false']);
+		return false;
+	}
+	if($("#virtual_gateway").val()&&!$("#virtual_gateway").val().match(pattern)){
+		alert(word['word_net_gateway_format_false']);
+		return false;
+	}
+	
+	//alert($("#form_virtual").serialize());
+	if(op=="edit"){
+		$.post("index.php?do=ajax&view=net_list&op=virtual_edit",$("#form_virtual").serialize());
+	}else{
+		$.post("index.php?do=ajax&view=net_list&op=virtual",$("#form_virtual").serialize());
+	}
+	alert(word['word_net_save_to_work']);
+	$("#pop_virtual").dialog("close");
+	main_load("net_list");
+}
+//确定绑定
+function bond_enter(){
+	if(!$("#netcard_list").val()||$("#netcard_list").val().length<2){
+		alert(word['word_net_netcard_2_choose']);
+		return false;
+	}
+	$.post("index.php?do=ajax&view=net_list&op=bond",$("#form_bond").serialize());
+	alert(word['word_net_save_to_work']);
+	$("#pop_netbond").dialog("close");
+	main_load("net_list");
+}
+
+//删除虚拟接口
+function virtual_del(name){
+	if(confirm(word['word_net_virtual_del_confirm'])){
+		$.ajax({url:"index.php?do=ajax&view=net_list&op=virtual_del&name="+name,async:false});
+		main_load("net_list");
+	}
+}
+//删除网卡绑定
+function bond_del(name){
+	if(confirm(word['word_net_bond_del_confirm'])){
+		$.ajax({url:"index.php?do=ajax&view=net_list&op=bond_del&name="+name,async:false});
+		main_load("net_list");
+	}
+}
+</script>

@@ -1,0 +1,83 @@
+<!--添加组-->
+<div>
+  <form id="form_group_creat">
+    <table border="0">
+      <tr>
+        <td width="20%"><span class="word_name">名称</span></td>
+        <td><input type="text" name="gname" id="gname" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_plan"></span></td>	
+        <td><select name="add_plan" id="plan_list"></select></td>
+      </tr>
+      <tr>
+        <td width="30%" id="group_monitors_0"><span class="word_fee">前端设备</span></td>
+        <td><select name="m_list[]" id="m_list" multiple size="20" style="width:100%"></select></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	$.getJSON("index.php?do=ajax&view=monitor_list&op=get_plan",function(plan){
+		var plan_options="<option value=0>"+word['word_none']+"</option>";
+		for(i in plan){
+			plan_options+="<option value="+plan[i]['id']+">"+plan[i]['name']+"</option>";
+		}
+		$("#plan_list").html(plan_options);
+	});
+	
+	$.getJSON("index.php?do=ajax&view=monitor_group&op=get_ungroup_monitor",function(m_arr){
+		var m_options="";																					 
+		for(i in m_arr){
+			m_options+="<option value="+m_arr[i]['Id']+">"+m_arr[i]['Name']+"</option>";
+		}
+		$("#m_list").html(m_options);
+	});
+	
+	if(word['word_online']=='登录为'){
+		pop_buttons({
+			"确定":function(){
+				group_creat_enter();
+			},
+			"取消":function(){
+				pop_close("monitor_group_creat");
+			}
+		},"monitor_group_creat");
+	}else{
+		pop_buttons({
+			"Accept":function(){
+				group_creat_enter();
+			},
+			"Cancel":function(){
+				pop_close("monitor_group_creat");
+			}
+		},"monitor_group_creat");
+	}
+});
+
+//添加组
+function group_creat_enter(){
+	if(!$("#gname").val()){
+		alert(word['word_name_please']);
+		return false;
+	}
+	var url=encodeURI("index.php?do=ajax&view=monitor_group&op=group_name_validate&gname="+$("#gname").val());
+	var is_name=$.ajax({url:url,async:false});
+	if(is_name.responseText){
+		alert(word['word_name_exists']);
+		return false;
+	}
+	$.post("index.php?do=ajax&view=monitor_group&op=group_creat",$("#form_group_creat").serialize());
+	
+	if(document.getElementById("main_iframe")){
+		get_monitor_tree();
+	}else{
+		main_load('monitor_group');
+	}
+	pop_close("monitor_group_creat");
+}
+</script>

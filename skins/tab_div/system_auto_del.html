@@ -1,0 +1,43 @@
+<!--录像自动删除-->
+<div>
+  <form id="form_auto_del">
+    <table border="0" class="main_table">
+      <thead>
+        <tr>
+          <th width="20%"><span class="word_monitor_group">组</span></th>
+          <th><span class="word_system_delete_as_space">按空间自动删除</span></th>
+          <th><span class="word_system_rate_of_space">保留空间比例</span></th>
+          <th><span class="word_system_delete_as_time">按时间自动删除</span></th>
+          <th><span class="word_system_length_of_time">保留时间长度</span></th>
+        </tr>
+      </thead>
+      <tbody id="auto_del_table"><tr><td colspan="5"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中，请稍候...</span></td></tr></tbody>
+    </table>
+  </form>
+</div>
+
+<div class="main_op">
+  <!--<input type="button" value="保存" id="auto_del_save" />-->
+  <button id="auto_del_save"><span class="word_save">保存</span></button>
+</div>
+
+<script type="text/javascript">
+//录像自动删除
+$(document).ready(function(){
+	language();
+	
+	$("button").button();
+	
+	get_table("auto_del","index.php?do=ajax&view=system_set&op=get_auto_del",word['word_none']);
+	
+	//保存
+	$("#auto_del_save").click(function(){
+		$.post("index.php?do=ajax&view=system_set&op=set_auto_del",$("#form_auto_del").serialize(),function(){
+			alert(word['word_success']);	
+			main_load('system_set');	
+		});		
+	});
+	
+});
+</script>
+

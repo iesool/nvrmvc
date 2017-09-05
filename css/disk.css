@@ -1,0 +1,32 @@
+@charset "utf-8";
+/* CSS Document */
+.raid_list{
+	width:512px;
+	margin-top:10px
+}
+.disk_description{
+	width:20%; 
+	float:right;
+	margin-top:10px 
+}
+.disk_table{
+	width:512px;
+	margin-top:10px;
+}
+.disk_table table{
+	width:100%;
+}
+.disk_table table td{
+	font-weight:bold;
+	font-size:10px;
+	color:#FFF;
+	width:25%;
+	height:30px;
+	background:url(../images/diskbg.png);
+}
+.vg_table{
+	margin-top:10px;
+}
+.lv_table{
+	margin-top:10px;
+}

@@ -1,0 +1,189 @@
+<div>
+  <table border="0" cellpadding="10" cellspacing="0">
+    <!--<tr>
+      <td width="15%"><span class="word_system_monitor_dump">导出前端设备</span></td>
+      <td><button id="monitor_dump"><span class="word_system_monitor_dump">导出前端设备</span></button></td>
+      <td><span class="word_system_monitor_dump_info">该操作是将前端设备列表导出为EXCEL可以打开的.xls格式文件。注意：导出的文件中，设备“ID”不能改动！否则如果再将该文件导回去后，该设备录像会找不到或不正确！</span></td>
+    </tr>
+    <tr>
+      <td><span class="word_system_monitor_import">导入前端设备</span></td>
+      <td><button id="monitor_insert"><span class="word_system_monitor_import">导入前端设备</span></button></td>
+      <td><span class="word_system_monitor_import_info">该操作是将保存前端设备信息的.xls文件导入数据库。注意：1、该操作会覆盖原有数据库中前端设备信息，请务必谨慎操作！2、“厂家”，“型号”，“分辨率”，所在组”和“时分秒”必须按“添加前端设备”里的名称和规则填写！3、必须使用指定表头的模版！</span><a href="example.xls"><span class="word_system_excel_template">下载EXCEL模版</span></a></td>
+    </tr>-->
+    <tr>
+      <td width="15%"><span class="word_system_db_dump">导出数据库</span></td>
+      <td><button id="db_dump"><span class="word_system_db_dump">导出数据库</span></button></td>
+      <td><span class="word_system_db_dump_info">该操作是将数据库中所有数据导出为.sql格式的文件，包括前端设备、录像信息、挂载点、用户信息等内容。</span></td>
+    </tr>
+    <tr>
+      <td><span class="word_system_db_import">导入数据库</span></td>
+      <td><button id="db_insert"><span class="word_system_db_import">导入数据库</span></button></td>
+      <td><span class="word_system_db_import_info">该操作是将.sql文件导入数据库。注意：1、该操作会覆盖原有数据库中的所有信息，请务必谨慎操作！2、该操作只是恢复记录，导入之前已经删除的录像和挂载点不能恢复，请务必核对准确！</span></td>
+    </tr>
+  </table>
+</div>
+
+<div id="pop_insert">
+  <form method="post" action="" enctype="multipart/form-data" id="form_insert">
+    <span class="word_system_backup_file_please">请选备份文件</span>&nbsp;<input type="file" name="backup_file" id="backup_file" />&nbsp;<span id="format_alt"></span>
+  </form>
+  <!--<input type="file" name="backup_file" id="backup_file" />-->
+  <!--<div id="xls_div" class="upload"><input type="file" name="xls_file" id="xls_file" /></div>
+  <div id="sql_div" class="upload"><input type="file" name="sql_file" id="sql_file" /></div>-->
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){	
+	language();
+	
+	//按钮样式(jquery ui)
+	$("#monitor_dump").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-arrowthick-1-e"
+		}
+	});
+	$("#monitor_insert").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-arrowthick-1-w"
+		}
+	});
+	$("#db_dump").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-arrowthick-1-e"
+		}
+	});
+	$("#db_insert").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-arrowthick-1-w"
+		}
+	});
+	
+	//导入弹出层
+	$("#pop_insert").dialog({
+		width:450,
+		height:150,
+		modal: true,
+		autoOpen:false,
+		resizable:false,
+		close:function(){
+			//$("#backup_file").uploadify("cancel");
+		}
+	});
+	
+	/*$("#xls_file").uploadify({	
+		swf:"uploadify.swf",
+		uploader:"uploadify.php",
+		auto:false,
+		width:200,
+		height:30,
+		queueSizeLimit : 1,
+		buttonText:"请选择xls格式的文件",
+		onUploadSuccess:function(file, data, response){
+			alert(data);
+		}
+	});
+	$("#sql_file").uploadify({	
+		swf:"uploadify.swf",
+		uploader:"uploadify.php",
+		auto:false,
+		width:200,
+		height:30,
+		queueSizeLimit : 1,
+		buttonText:"请选择sql格式的文件",
+		onUploadSuccess:function(file, data, response){
+			alert(data);
+		}
+	});*/
+	
+	/*$("#backup_file").uploadify({	
+		swf:"uploadify.swf",
+		uploader:"uploadify.php",
+		auto:false,
+		width:200,
+		height:30,
+		queueSizeLimit : 1,
+		onUploadSuccess:function(file, data, response){
+			alert(data);
+		}
+	});*/
+	
+	//前端设备导出
+	$("#monitor_dump").click(function(){
+		//window.location="index.php?do=ajax&view=system_backup&op=monitor_dump";
+		var backinfo=$.ajax({url:"index.php?do=ajax&view=system_backup&op=monitor_dump",async:false});
+		window.location=backinfo.responseText;
+	});
+	
+	//前端设备导入
+	$("#monitor_insert").click(function(){
+		pop_insert("index.php?do=ajax&view=system_backup&op=monitor_insert","xls",word['word_system_monitor_dump']);
+	});
+	
+	//数据库导出
+	$("#db_dump").click(function(){
+		window.location="index.php?do=ajax&view=system_backup&op=db_dump";
+	});
+	
+	//数据库导入
+	$("#db_insert").click(function(){
+		pop_insert("index.php?do=ajax&view=system_backup&op=db_insert","sql",word['word_system_monitor_import']);
+	});
+	
+});
+
+//弹出导入
+function pop_insert(action,format,title){
+	$("#form_insert").resetForm();										
+	$("#form_insert").attr("action",action);
+	$("#format_alt").html("."+format+" "+word['word_system_format_file']);
+	
+	//$("#backup_file").uploadify("settings","upload_url","ad.php");
+	//$("#backup_file").uploadify("settings","buttonText","请选择."+format+"格式的文件");
+	//$(".upload").hide();
+	//$("#"+format+"_file").uploadify("settings","buttonText","请选择."+format+"格式的文件");
+	//$("#"+format+"_div").show();
+	
+	$("#pop_insert").dialog("option","title",title);
+	if(word['word_online']=="登录为"){
+		$("#pop_insert").dialog("option","buttons",{ 
+			"确定":function(){ 
+				insert(format);
+			},
+			"取消":function(){
+				$(this).dialog("close");
+			} 
+		});
+	}else{
+		$("#pop_insert").dialog("option","buttons",{ 
+			"Accept":function(){ 
+				insert(format);
+			},
+			"Cancel":function(){
+				$(this).dialog("close");
+			} 
+		});
+	}
+	$("#pop_insert").dialog("open");							  
+}
+
+//导入执行
+function insert(format){
+	//$("#backup_file").uploadify("upload");
+	//$("#"+format+"_file").uploadify("upload");
+	
+	if(!$("#backup_file").val()){
+		alert(word['word_system_backup_file_please']);
+		return false;
+	}
+	var fname=$("#backup_file").val().split(format);
+	if(fname[1]!=""){
+		alert(word['word_select_please']+format+word['word_system_format_file']);
+		return false;
+	}
+	$("#form_insert").submit();
+}
+</script>

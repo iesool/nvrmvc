@@ -1,0 +1,40 @@
+<!--备份设置-->
+<div>
+  <form id="form_log_config">
+    <table border="0" width="100%" style="text-align:center" class="main_table" cellpadding="5">
+      <thead>
+        <tr>
+          <!--<th width="20%"><span class="word_loading">日志类型</span></th>-->
+          <th width="20%"><span class="word_system_log_auto_backup">按时间自动备份</span></th>
+          <th width="20%"><span class="word_system_log_auto_backup_time">备份时间间隔</span></th>
+          <th width="20%"><span class="word_system_log_auto_backup_del">按时间删除备份</span></th>
+          <th width="20%"><span class="word_system_log_auto_backup_del_time">删除时间间隔</span></th>
+        </tr>
+      </thead>
+      
+      <tbody id="log_config_table"><tr><td colspan="5"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中，请稍候...</span></td></tr></tbody>
+    </table>
+  </form>
+</div>
+
+<div class="main_op">
+  <button id="log_config_save"><span class="word_save">保存</span></button>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	$("button").button();	
+	
+	get_table("log_config","index.php?do=ajax&view=system_set&op=get_log_config",word['none']);
+	
+	$("#log_config_save").click(function(){
+		var backi=$.post("index.php?do=ajax&view=system_set&op=set_log_config",$("#form_log_config").serialize(),function(){
+			alert(word['word_success']);	
+			main_load('system_set');	
+		});			
+	});
+});
+</script>
+

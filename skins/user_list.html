@@ -1,0 +1,59 @@
+<h3>
+  <table border="0" width="100%">
+    <tr>
+      <td align="left"><span class="word_user_list">用户列表</span>&nbsp;<a href="javascript:;" onClick="user_creat()"><span class="word_user_creat">添加新用户</span></a></td>
+      <td align="right"><a href="javascript:;" onClick="main_load('user_list')"><span class="word_refresh">刷新</span></a></td>
+    </tr>
+  </table>
+</h3>
+
+<div>
+  <table border="0" class="main_table">
+    <thead>
+      <th width="7%"><span class="word_username">用户名</span></th>
+      <th><span class="word_monitor_watch">实时观看</span></th>
+      <th><span class="word_monitor_event">录像观看</span></th>
+      <th><span class="word_monitor_ptz">云台控制</span></th>
+      <th><span class="word_user_group_modify_right">组管理</span></th>
+      <th><span class="word_user_monitor_control_right">前端设备控制</span></th>
+      <th><span class="word_user_monitor_modify_right">前端设备编辑</span></th>
+      <th><span class="word_user_event_download_right">录像下载</span></th>
+      <th><span class="word_user_event_delete_right">录像删除</span></th>
+      <th><span class="word_user_log_operate_right">日志管理</span></th>
+      <th><span class="word_user_plan_modify_right">计划设置</span></th>
+      <th width="7%"><span class="word_operation">操作</span></th>
+    </thead>
+    <tbody id="users_table"><tr><td colspan="9"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+  </table>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	//获取用户列表
+	get_table("users","index.php?do=ajax&view=user_list&op=get_user_list",word['word_none']);
+});
+
+//添加新用户
+function user_creat(){
+	pop_div(350,630,word['word_user_creat'],"user");
+}
+
+//修改用户
+function user_edit(uid){
+	$("#main").append("<input type='hidden' id='edit_uid' value='"+uid+"' />");
+	pop_div(350,630,word['word_user_edit'],"user");
+}
+
+//删除用户
+function user_del(uid){
+	if(confirm(word['word_user_delete_confirm'])){
+		var del=$.ajax({url:"index.php?do=ajax&view=user_list&op=user_del&uid="+uid,async:false});
+		//alert(del.responseText);
+		main_load("user_list");
+	}
+}
+</script>
+
+

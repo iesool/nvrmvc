@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link type="text/css" rel="stylesheet" href="../css/login.css" />
+<script type="text/javascript" src="../js/functions.js"></script>
+<script type="text/javascript" src="../js/jquery.js"></script>
+<script type="text/javascript" src="../js/jquery.pngFix.js"></script>
+<script type="text/javascript" src="../js/pngfix.js"></script>
+<title>NVR - 登录</title>
+</head>
+
+<body>
+  <div id="main">
+    <div class="header"><img src="../images/logo.png" /></div>
+    <div class="text"><img src="../images/text_03.png" /></div>
+    <div class="signin">
+      <div class="wrap">
+        <img src="../images/signbg_03.png" />
+        <div class="ctl">
+          <form>
+            <input type="text" name="username" id="username" class="inputctl" />
+            <div class="clear"></div>
+  
+            <input type="password" name="password" id="password" class="inputctl" />
+            <div class="clear"></div>
+  
+            <input type="submit" class="btn" id="login" value="" onClick="return false;"/>
+            <div class="clear"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="copyright"></div>
+  </div>
+</body>
+</html>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#login").click(function(){
+		if(user_login()){
+			window.location.reload();
+		}else{
+			return false;
+		}
+	});						   
+});
+
+function user_login(){
+	var username=$("#username").val();
+	var password=$("#password").val();
+	
+	if(!username){
+		alert("请输入用户名！");
+		return false;
+	}
+	
+	if(!password){
+		alert("请输入密码！");
+		return false;
+	}
+	
+	if(getCookie("password_error")&&getCookie("password_error")==3){
+		alert("连续输错三次密码，在输错第三次之后的20分钟之内无法登录！");
+		return false;
+	}
+	
+	var url="index.php?do=ajax&view=user_login&username="+username+"&password="+password;
+	var user_login=$.ajax({url:encodeURI(url),async:false});
+	if(user_login.responseText==1){
+		alert("用户不存在！");
+		return false;
+	}else if(user_login.responseText==2){
+		if(getCookie("password_error")){
+			var val=parseInt(getCookie("password_error"))+1;
+			var chance=2-parseInt(getCookie("password_error"));
+			setCookie("password_error",val,20,"minute");
+		}else{
+			var val=1;
+			var chance=2;
+			setCookie("password_error",1,20,"minute");
+		}
+		if(chance==0){
+			alert("密码错误！您已连续输错三次，20分钟之内无法登录");
+		}else{
+			alert("密码错误！您还有"+chance+"次机会");
+		}
+		return false;
+	}else{
+		return true;
+	}
+}
+</script>

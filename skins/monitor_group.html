@@ -1,0 +1,58 @@
+<h3>
+  <table border="0" width="100%">
+    <tr>
+      <td align="left"><span class="word_monitor_group">所属组管理</span>&nbsp;<a href="javascript:;" onClick="group_creat()"><span class="word_monitor_group_add">添加组</span></a></td>
+      <td align="right"><a href="javascript:;" onClick="main_load('monitor_group')"><span class="word_refresh">刷新</span></a></td>
+    </tr>
+  </table>
+</h3>
+
+<table border="0" class="main_table">
+  <thead>
+    <tr>
+      <th width="20%"><span class="word_name">名称</span></th>
+      <th width="15%"><span class="word_operation">操作</span></th>
+      <th width="15%"><span class="word_space">存储空间</span></th>
+      <th width="50%"><span class="word_fee">前端设备</span></th>
+    </tr>
+  </thead>
+  <tbody id="group_table"><tr><td colspan="4"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+</table>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	get_table("group","index.php?do=ajax&view=monitor_group&op=get_group_list",word['word_none']);	
+});
+
+//添加组
+function group_creat(){
+	pop_div(350,530,word['word_monitor_group_add'],"monitor_group_creat");
+}
+//组内添加前端设备
+function group_add(gid){
+	$("#main").append("<input type='hidden' id='edit_gid' value='"+gid+"' />");
+	pop_div(350,480,word['word_monitor_group_monitor_add'],"monitor_group_add");
+}
+//组内删除前端设备
+function group_remove(gid){
+	$("#main").append("<input type='hidden' id='edit_gid' value='"+gid+"' />");
+	pop_div(350,480,word['word_monitor_group_monitor_remove'],"monitor_group_remove");
+}
+//修改组名称
+function group_edit(gid,gname,plan_id){
+	$("#main").append("<input type='hidden' id='edit_gid' value='"+gid+"' />");
+	$("#main").append("<input type='hidden' id='edit_gname' value='"+gname+"' />");
+	$("#main").append("<input type='hidden' id='edit_plan_id' value='"+plan_id+"' />");
+	pop_div(300,200,word['word_monitor_group_edit'],"monitor_group_edit");
+}
+
+//删除组
+function group_del(gid){
+	if(confirm(word['word_monitor_group_del_confirm'])){
+		$.ajax({url:"index.php?do=ajax&view=monitor_group&op=group_del&gid="+gid,async:false});
+		main_load("monitor_group");
+	}
+}
+</script>

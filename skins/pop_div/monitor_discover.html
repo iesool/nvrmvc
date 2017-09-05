@@ -1,0 +1,156 @@
+<div id="discover_step_1">
+  <span class="word_monitor_discover_step_1">第一步：获取原始地址</span>
+  <form id="form_discover_1">
+    <table border="0" width="100%" class="pop_table">
+      <thead>
+        <tr>
+          <th width="40%"><span class="word_ip">IP</span></th>
+          <th width="30%"><span class="word_passport">用户名</span></th>
+          <th width="30%"><span class="word_password">密码</span></th>
+        </tr>
+      </thead>
+      <tbody id="discover_1_table"><tr><td colspan="9"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+    </table>
+  </form>
+</div>
+
+<div id="discover_step_2">
+  <span class="word_monitor_discover_step_2">第二步：获取其他信息</span>
+  <form id="form_discover_2">
+    <table border="0" width="100%" class="pop_table">
+      <thead>
+        <tr>
+          <th width="20%"><span class="word_name">名称</span></th>
+          <th width="15%"><span class="word_ip">IP</span></th>
+          <th width="15%"><span class="word_resolution">分辨率</span></th>
+          <th width="15%"><span class="word_monitor_ptz">云台</span></th>
+          <th width="15%"><span class="word_monitor_factory">厂家</span></th>
+          <th width="15%"><span class="word_monitor_model">型号</span></th>
+          <th width="5%"><input type="checkbox" onclick="check_all(this,'form_discover_2')" checked /></th>
+        </tr>
+      </thead>
+      <tbody id="discover_2_table"><tr><td colspan="9"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+    </table>
+  </form>
+</div>
+
+<div style="margin-top:10px">
+  <span class="word_monitor_discover_warn">注：IP为蓝色表示IP为新发现的设备，其他则表示发现的IP已存前端设备列表的设备</span>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();	
+	
+	$("button").button();
+	
+	$("#discover_step_1").show();
+	$("#discover_step_2").hide();
+	
+	get_table("discover_1","index.php?do=ajax&view=monitor_list&op=monitor_discover&type=get_1",word['word_none']);
+	
+	if(word['word_online']=='登录为'){
+		pop_buttons({
+			/*"导入发现的全部设备":function(){
+				discover_set("all");
+			},
+			"只导入新发现的设备":function(){
+				discover_set("new");
+			},
+			"取消":function(){
+				$.ajax({url:"index.php?do=ajax&view=monitor_list&op=monitor_discover&type=cancel",async:false});
+				pop_close("monitor_discover");
+			}*/
+			"下一步":function(){
+				next_step();
+			}
+		},"monitor_discover");
+	}else{
+		pop_buttons({
+			/*"Insert all FEE of discoveried":function(){
+				discover_set("all");
+			},
+			"Insert only new FEE of discoveried":function(){
+				discover_set("new");
+			},
+			"Cancel":function(){
+				$.ajax({url:"index.php?do=ajax&view=monitor_list&op=monitor_discover&type=cancel",async:false});
+				pop_close("monitor_discover");
+			}*/
+			"Next":function(){
+				next_step();
+			}
+		},"monitor_discover");
+	}
+});
+
+
+//下一步
+function next_step(){
+	var k=0;
+	$(".pass").each(function(){
+		if(!$(this).val()){
+			k++;
+		}
+	});
+	if(k>0){
+		alert("请填写用户名和密码！");
+		return false;
+	}
+	
+	
+	pop_buttons({
+		"上一步":function(){
+			prev_step();
+		},
+		"导入":function(){
+			insert();
+		}
+	},"monitor_discover");
+	
+	$("#discover_step_1").hide();
+	$("#discover_step_2").show();
+	
+	//$.post("index.php?do=ajax&view=monitor_list&op=monitor_discover&type=set_1",$("#form_discover_1").serialize(),function(back_info){});
+	$.ajax({url:"index.php?do=ajax&view=monitor_list&op=monitor_discover&type=set_1",type:"POST",data:$("#form_discover_1").serialize(),async:false});
+	
+	$("#discover_2_table").html('<tr><td colspan="9"><img src="../images/ajax-loader.gif" />&nbsp;<span class="word_loading">载入中...</span></td></tr>');
+	get_table("discover_2","index.php?do=ajax&view=monitor_list&op=monitor_discover&type=get_2",word['word_none']);
+}
+
+//上一步
+function prev_step(){
+	pop_buttons({
+		"下一步":function(){
+			next_step();
+		}
+	},"monitor_discover");
+	
+	$("#discover_step_1").show();
+	$("#discover_step_2").hide();
+}
+
+//导入
+function insert(){
+	//$.post("index.php?do=ajax&view=monitor_list&op=monitor_discover&type=set_2",$("#form_discover_2").serialize(),function(back_info){});
+	$.ajax({url:"index.php?do=ajax&view=monitor_list&op=monitor_discover&type=set_2",type:"POST",data:$("#form_discover_2").serialize(),async:false});
+	
+	if(document.getElementById("main_iframe")){
+		get_monitor_tree();
+	}else{
+		main_load('monitor_list');
+	}
+	pop_close("monitor_discover");
+}
+
+/*function discover_set(set){
+	$.ajax({url:"index.php?do=ajax&view=monitor_list&op=monitor_discover&type=set&set="+set,async:false});
+	
+	if(document.getElementById("main_iframe")){
+		get_monitor_tree();
+	}else{
+		main_load('monitor_list');
+	}
+	pop_close("monitor_discover");
+}*/
+</script>

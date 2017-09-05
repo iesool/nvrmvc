@@ -1,0 +1,36 @@
+<!--设置系统时间-->
+<div>
+  <form id="form_time">
+    <span class="word_system_time_please">请选择系统时间</span>&nbsp;<input class="Wdate" type="text" onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="" id="system_time_text" name="system_time_text" size="25">
+  </form>
+</div>
+
+<div class="main_op">
+  <!--<input type="button" value="保存" id="time_save" />-->
+  <button id="time_save"><span class="word_save">保存</span></button>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("button").button();
+	language();
+	
+	//获取系统时间
+	var backinfo=$.ajax({url:"index.php?do=ajax&view=system_set&op=get_system_time",async:false});
+	$("#system_time_text").val(backinfo.responseText);
+	
+	$("#time_save").click(function(){
+		if(!$("#system_time_text").val()){
+			alert(word['word_system_time_please']);
+			return false;
+		}
+								   
+		$.post("index.php?do=ajax&view=system_set&op=set_system_time",$("#form_time").serialize(),function(){
+			alert(word['word_success']);
+			//main_load('system_time');
+			main_load('system_set');
+		});
+	});
+});
+
+</script>

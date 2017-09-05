@@ -1,0 +1,481 @@
+<form id="form_monitor_edit">
+  <input type="hidden" name="mid" id="mid" value="" />
+  <input type="hidden" name="function" id="function" value="" />
+  <input type="hidden" name="format" id="format" value="" />
+  <input type="hidden" name="format2" id="format2" value="" />
+  <input type="hidden" name="name_yuan" id="name_yuan" value="" />
+  <table border="0" width="100%" cellpadding="2">
+    <tr>
+      <td width="28%"><span class="word_name">名称：</span></td>
+      <td width="57%"><input type="text" name="name" id="name" value="" /></td>
+      <td width="15%" id="name_validate">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_monitor_factory">厂家：</span></td>
+      <td><select name="factory" id="factory"></select></td>
+      <td id="factory_validate">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_monitor_model">型号：</span></td>
+      <td><select name="model" id="model"></td>
+      <td id="model_validate">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_monitor_resolution">分辨率：</span></td>
+      <td><select name="resolution" id="resolution"></td>
+      <td id="resolution_validate">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_ip">IP地址：</span></td>
+      <td><input type="text" name="ip" id="ip" value="" /></td>
+      <td id="ip_validate">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_monitor_passport">设备帐号：</span></td>
+      <td><input type="text" name="passport" id="passport" value="" /></td>
+      <td id="passport_validate">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_monitor_password">设备密码：</span></td>
+      <td><input type="text" name="password" id="password" value="" /></td>
+      <td id="password_validate">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_monitor_stream">码流：</span></td>
+      <td>
+        <input type="radio" name="stream" id="main_stream" value="1" checked />&nbsp;<span class="word_monitor_main_stream">主码流</span>
+        <input type="radio" name="stream" id="auxiliary_stream" value="2" />&nbsp;<span class="word_monitor_assist_stream">辅码流</span>
+      </td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_monitor_group">所属组：</span></td>
+      <td><select name="group" id="group"></select></td>
+      <td id="">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_plan">计划：</span></td>
+      <td>
+        <select name="plan" id="plan"></select>
+        <!--<a href="javascript:;" onClick="$('#main').append('<input type=hidden id=edit_setting value=system_plan />');pop_div(800,600,word['word_setting'],'setting');" class="plan_setting"><span class="word_setting">设置</span></a>-->
+      </td>
+      <td id="">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_monitor_event_time">单录像时间：</span></td>
+      <td colspan="2">
+        <select id="hour" name="hour"></select>&nbsp;<span class="word_hour">小时</span>
+        <select id="minute" name="minute"></select>&nbsp;<span class="word_minute">分钟</span>
+        <select id="second" name="second"></select>&nbsp;<span class="word_second">秒</span>
+      </td>
+    </tr>
+  </table>
+</form>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	var mid=$("#edit_mid").val();
+	$("#edit_mid").remove();
+	
+	$.getJSON("index.php?do=ajax&view=monitor_list&op=get_monitor&mid="+mid,function(monitor){
+		$("#mid").val(mid)
+		$("#function").val(monitor['function']);
+		$("#format").val(monitor['format']);
+		$("#format2").val(monitor['format2']);
+		$("#name_yuan").val(monitor['name']);
+		
+		$("#name").val(monitor['name']);
+		$("#ip").val(monitor['ip']);	
+		$("#passport").val(monitor['passport']);	
+		$("#password").val(monitor['password']);
+		
+		var factory=document.getElementById('factory');
+		var model=document.getElementById('model');
+		var resolution=document.getElementById('resolution');
+		var group=document.getElementById('group');
+		var hour=document.getElementById('hour');						   
+		var minute=document.getElementById('minute');
+		var second=document.getElementById('second');
+		
+		if(monitor['format']){
+			factory.options.length=0;
+			//factory.options[factory.length]=new Option("请选择",0);
+			for(i in monitor['factory_arr']){
+				factory.options[i]=new Option(monitor['factory_arr'][i]['Name'],monitor['factory_arr'][i]['Id']);
+				if(factory.options[i].value==monitor['factory']){
+					factory.options[i].selected=true;
+				}
+			}
+		}else{
+			//$("#factory").replaceWith(monitor['factory']);
+			$("#factory").html("<option>"+monitor['factory']+"</option>");
+		}
+		
+		if(monitor['format']){
+			model.options.length=0;
+			//model.options[model.length]=new Option("请选择",0);
+			for(i in monitor['model_arr']){
+				model.options[model.length]=new Option(monitor['model_arr'][i]['Name'],monitor['model_arr'][i]['Id']);
+				if(model.options[i].value==monitor['model']){
+					model.options[i].selected=true;
+				}
+			}
+		}else{
+			//$("#model").replaceWith(monitor['model']);
+			$("#model").html("<option>"+monitor['model']+"</option>");
+		}
+		
+		//if(monitor['format']){
+			resolution.options.length=0;
+			//resolution.options[resolution.length]=new Option("请选择",0);
+			for(i in monitor['resolution_arr']){
+				resolution.options[resolution.length]=new Option(monitor['resolution_arr'][i],monitor['resolution_arr'][i]);
+				if(resolution.options[i].innerHTML==monitor['resolution']){
+					resolution.options[i].selected=true;
+				}
+			}
+		//}else{
+			//$("#resolution").replaceWith(monitor['resolution']);
+			//$("#resolution").html("<option>"+monitor['resolution']+"</option>");
+		//}
+		
+		if(monitor['stream']==2){
+			$("#auxiliary_stream").attr("checked",true);
+		}
+		
+		group.options.length=0;
+		for(i in monitor['group']){
+			group.options[group.length]=new Option(monitor['group'][i]['Name'],monitor['group'][i]['Id']);
+			if(group.options[i].innerHTML==monitor['mgroup']){
+				group.options[i].selected=true;
+			}
+		}
+	
+		
+		hour.options.length=0;
+		for(var i=0;i<=2;i++){
+			hour.options[hour.length]=new Option(i,i);
+			if(parseInt(hour.options[i].value)==monitor['hour']){
+				hour.options[i].selected=true;
+			}
+		}
+		minute.options.length=0;
+		for(var i=0;i<60;i++){
+			minute.options[minute.length]=new Option(i,i);
+			if(parseInt(minute.options[i].value)==monitor['minute']){
+				minute.options[i].selected=true;
+			}
+		}
+		second.options.length=0;
+		for(var i=0;i<60;i++){
+			second.options[second.length]=new Option(i,i);
+			if(parseInt(second.options[i].value)==monitor['second']){
+				second.options[i].selected=true;
+			}
+		}
+		
+		$.getJSON("index.php?do=ajax&view=monitor_list&op=get_plan",function(plan){
+			var plan_options="<option value=0>"+word['word_none']+"</option>";
+			for(i in plan){
+				/*if(monitor['plan_id']==plan[i]){
+					plan_options+="<option value="+plan[i]+" selected>"+word['word_plan']+plan[i]+"</option>";
+				}else{
+					plan_options+="<option value="+plan[i]+">"+word['word_plan']+plan[i]+"</option>";
+				}*/
+				if(monitor['plan_id']==plan[i]['id']){
+					plan_options+="<option value="+plan[i]['id']+" selected>"+plan[i]['name']+"</option>";
+				}else{
+					plan_options+="<option value="+plan[i]['id']+">"+plan[i]['name']+"</option>";
+				}
+			}
+			$("#plan").html(plan_options);
+		});
+		
+		if(monitor['function']=="Record"||monitor['function']=="SameTime"){
+			$("#factory").attr("disabled",true);
+			$("#model").attr("disabled",true);
+			$("#resolution").attr("disabled",true);
+			$("#ip").attr("disabled",true);
+			$("#passport").attr("disabled",true);
+			$("#password").attr("disabled",true);
+			$(":radio").attr("disabled",true);
+			$("#group").attr("disabled",true);
+			$("#plan").attr("disabled",true);
+			$("#hour").attr("disabled",true);
+			$("#minute").attr("disabled",true);
+			$("#second").attr("disabled",true);
+			
+		}else if(monitor['format']==""){
+			$("#factory").attr("disabled",true);
+			$("#model").attr("disabled",true);
+			$("#resolution").attr("disabled",false);
+			$("#ip").attr("disabled",true);
+			$("#passport").attr("disabled",false);
+			$("#password").attr("disabled",false);
+			$(":radio").attr("disabled",true);
+			
+			$("#group").attr("disabled",false);
+			$("#plan").attr("disabled",false);
+			$("#hour").attr("disabled",false);
+			$("#minute").attr("disabled",false);
+			$("#second").attr("disabled",false);
+		}else{
+			$("#factory").attr("disabled",false);
+			$("#model").attr("disabled",false);
+			$("#resolution").attr("disabled",false);
+			$("#ip").attr("disabled",false);
+			$("#passport").attr("disabled",false);
+			$("#password").attr("disabled",false);
+			$(":radio").attr("disabled",false);
+			$("#group").attr("disabled",false);
+			$("#plan").attr("disabled",false);
+			$("#hour").attr("disabled",false);
+			$("#minute").attr("disabled",false);
+			$("#second").attr("disabled",false);
+		}
+	});
+	
+	$("#factory").change(function(){
+		$("#format").val("");
+		$("#format2").val("");
+		
+		var model=document.getElementById('model');
+		model.options.length=0;
+		var resolution=document.getElementById('resolution');	
+		resolution.options.length=0;
+		resolution.options[resolution.length]=new Option(word['word_monitor_model_select'],0);
+		
+		if($("#factory").val()==0){
+			model.options[model.length]=new Option(word['word_monitor_factory_select'],0);
+		}else{
+			model.options[model.length]=new Option(word['word_select'],0);
+			$.getJSON("index.php?do=ajax&view=monitor_list&op=get_model&fid="+$("#factory").val(),function(model_arr){
+				for(i in model_arr){
+					model.options[model.length]=new Option(model_arr[i]['Name'],model_arr[i]['Id']);
+				}
+			});		
+		}
+		
+		
+		if($(this).val()==0){
+			$("#factory_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		}else{
+			$("#factory_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+		}
+	});
+	
+	$("#model").change(function(){
+		$("#format").val("");
+		$("#format2").val("");
+		
+		var resolution=document.getElementById('resolution');	
+		resolution.options.length=0;
+		
+		if($("#model").val()==0){
+			resolution.options[resolution.length]=new Option(word['word_monitor_model_select'],0);
+		}else{
+			resolution.options[resolution.length]=new Option(word['word_select'],0);
+			$.getJSON("index.php?do=ajax&view=monitor_list&op=get_resolution&mid="+$("#model").val(),function(model_arr){
+				resolution_arr=model_arr['Resolution'].split(",");
+				for(i in resolution_arr){
+					resolution.options[resolution.length]=new Option(resolution_arr[i],resolution_arr[i]);
+				}
+				$("#format").val(model_arr['Format']);
+				$("#format2").val(model_arr['Format2']);
+			});		
+		}
+		
+		if($(this).val()==0){
+			$("#model_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		}else{
+			$("#model_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+		}
+	});
+	
+	$("#resolution").change(function(){
+		if($(this).val()==0){
+			$("#resolution_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		}else{
+			$("#resolution_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+		}
+	});
+	
+	$("#hour").change(function(){
+		var hour=document.getElementById('hour');						   
+		var minute=document.getElementById('minute');
+		var second=document.getElementById('second');
+		minute.options.length=0;
+		second.options.length=0;
+		if(parseInt(hour.value)==2){
+			minute.options[minute.length]=new Option(0,0);
+			second.options[second.length]=new Option(0,0);
+		}else if(parseInt(hour.value)==0){
+			for(var i=0;i<60;i++){
+				minute.options[minute.length]=new Option(i,i);
+			}
+			for(var i=30;i<60;i++){
+				second.options[second.length]=new Option(i,i);
+			}
+			
+		}else{
+			for(var i=0;i<60;i++){
+				minute.options[minute.length]=new Option(i,i);
+				second.options[second.length]=new Option(i,i);
+			}
+		}
+	});
+	
+	$("#minute").change(function(){
+		var hour=document.getElementById('hour');
+		var minute=document.getElementById('minute');
+		var second=document.getElementById('second');
+		second.options.length=0;
+		if(parseInt(hour.value)==0&&parseInt(minute.value)==0){
+			for(var i=30;i<60;i++){
+				second.options[second.length]=new Option(i,i);
+			}
+		}else{
+			for(var i=0;i<60;i++){
+				second.options[second.length]=new Option(i,i);
+			}
+		}
+	});
+	
+	if(word['word_online']=='登录为'){
+		pop_buttons({
+			"确定":function(){
+				monitor_edit();
+			},
+			"取消":function(){
+				pop_close("monitor_edit");
+			}
+		},"monitor_edit");
+	}else{
+		pop_buttons({
+			"Accept":function(){
+				monitor_edit();
+			},
+			"Cancel":function(){
+				pop_close("monitor_edit");
+			}
+		},"monitor_edit");
+	}
+});
+
+
+
+function monitor_edit(){	
+	if(!$("#name").val()){
+		$("#name_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_name_please']);
+		return false;
+	}
+	
+	if($("#name").val()!=$("#name_yuan").val()){
+		var url=encodeURI("index.php?do=ajax&view=monitor_list&op=monitor_name_validate&name="+$("#name").val());
+		var is_name=$.ajax({url:url,async:false});
+		if(is_name.responseText){
+			$("#name_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+			alert(word['word_name_exists']);
+			return false;
+		}else{
+			$("#name_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+		}
+	}else{
+		$("#name_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+	}
+	
+	
+	if($("#factory").val()==0){
+		$("#factory_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_monitor_factory_please']);
+		return false;
+	}else{
+		$("#factory_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+	}
+	
+	if($("#model").val()==0){
+		$("#model_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_monitor_model_please']);
+		return false;
+	}else{
+		$("#model_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+	}
+	
+	if($("#resolution").val()==0){
+		$("#resolution_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_monitor_resolution_please']);
+		return false;
+	}else{
+		$("#resolution_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+	}
+	
+	if(!$("#ip").val()){
+		$("#ip_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_ip_please']);
+		return false;
+	}
+	if(!$("#ip").val().match(/(?:\d+\.){3}(?:\d+)/)){
+		$("#ip_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_ip_format_false']);
+		return false;
+	}else{
+		$("#ip_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+	}
+	
+	//判断是否需要填写帐号密码
+	if($("#format").val()){
+		var passport_validate=$("#format").val().split("{passport}");
+		//alert(passport_validate[1])
+		if(passport_validate[1]){
+			if(!$("#passport").val()){
+				$("#passport_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+				alert(word['word_monitor_passport_please']);
+				return false;
+			}else{
+				$("#passport_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+			}
+			
+			if(!$("#password").val()){
+				$("#password_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+				alert(word['word_monitor_password_please']);
+				return false;
+			}else{
+				$("#password_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+			}
+		}else{
+			if($("#passport").val()){
+				$("#passport_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+				alert(word['word_monitor_passport_none']);
+				return false;
+			}else{
+				$("#passport_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+			}
+			
+			if($("#password").val()){
+				$("#password_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+				alert(word['word_monitor_password_none']);
+				return false;
+			}else{
+				$("#password_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+			}
+		}
+	}
+	
+	if(!$("#format2").val()&&!$("#main_stream").attr("checked")){
+		alert(word['word_monitor_assist_stream_none']);
+		return false;
+	}
+	
+	$.post("index.php?do=ajax&view=monitor_list&op=monitor_edit",$("#form_monitor_edit").serialize());
+	if(document.getElementById("main_iframe")){
+		get_monitor_tree();
+	}else{
+		main_load('monitor_list');
+	}
+	pop_close("monitor_edit");
+}
+</script>
+

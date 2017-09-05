@@ -1,0 +1,121 @@
+<input type="hidden" id="timepart_type" value="" />
+
+<select id="start_week"></select>
+<input type="text" id="start_date" size="10" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+<input type="text" id="start_hour" size="8" onClick="WdatePicker({dateFmt:'HH:mm:00'})" />
+
+<span class="word_system_to">至</span>
+
+<select id="end_week"></select>
+<input type="text" id="end_date" size="10" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+<input type="text" id="end_hour" size="8" onClick="WdatePicker({dateFmt:'HH:mm:00'})" />
+
+<!--<select id="is_record">-->
+  <!--<option value="1">录像</option>
+  <option value="0">不录像</option>-->
+<!--</select>-->
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	var plan_id=$("#edit_plan_id").val();
+	$("#edit_plan_id").remove();
+	
+	var timepart_id=$("#edit_timepart_id").val();
+	$("#edit_timepart_id").remove();
+	
+	if(timepart_id){
+		$.getJSON("index.php?do=ajax&view=system_set&op=get_timepart&timepart_id="+timepart_id,function(timepart_arr){
+			var ta=timepart_arr['Timepart'].split(" ");
+			
+			if(timepart_arr['Type']==1){
+				var start_week="";
+				var end_week="";
+				
+				var week_arr=new Array(word['word_system_mon'],word['word_system_tue'],word['word_system_wed'],word['word_system_thu'],word['word_system_fri'],word['word_system_sat'],word['word_system_sun']);
+				for(i in week_arr){
+					if(ta[0]==i){
+						start_week+="<option value="+i+" selected>"+week_arr[i]+"</option>";
+					}else{
+						start_week+="<option value="+i+">"+week_arr[i]+"</option>";
+					}
+					if(ta[2]==i){
+						end_week+="<option value="+i+" selected>"+week_arr[i]+"</option>";
+					}else{
+						end_week+="<option value="+i+">"+week_arr[i]+"</option>";
+					}
+				}
+				$("#start_week").html(start_week);
+				$("#end_week").html(end_week);
+			}else{
+				$("#start_date").val(ta[0]);
+				$("#end_date").val(ta[2]);
+			}
+			$("#start_hour").val(ta[1]);
+			$("#end_hour").val(ta[3]);
+			
+			/*if(timepart_arr['Is_record']==1){
+				var is_record="<option value=1 selected>"+word['word_system_record_enable']+"</option>"+"<option value=0>"+word['word_system_record_disable']+"</option>";
+			}else{
+				var is_record="<option value=1>"+word['word_system_record_enable']+"</option>"+"<option value=0 selected>"+word['word_system_record_disable']+"</option>";
+			}
+			$("#is_record").html(is_record);*/
+			
+			$("#timepart_type").val(timepart_arr['Type']);
+			plan_type(timepart_arr['Type']);
+		});
+		
+		var op="edit";
+	}else{
+		$.getJSON("index.php?do=ajax&view=system_set&op=get_timepart&plan_id="+plan_id,function(timepart_arr){
+			$("#timepart_type").val(timepart_arr['Type']);
+			plan_type(timepart_arr['Type']);
+		});
+		
+		var week_str="<option value=0>"+word['word_system_mon']+"</option>"+"<option value=1>"+word['word_system_tue']+"</option>"+"<option value=2>"+word['word_system_wed']+"</option>"+"<option value=3>"+word['word_system_thu']+"</option>"+"<option value=4>"+word['word_system_fri']+"</option>"+"<option value=5>"+word['word_system_sat']+"</option>"+"<option value=6>"+word['word_system_sun']+"</option>";
+		
+		$("#start_week").html(week_str);
+		$("#end_week").html(week_str);
+		
+		//$("#is_record").html("<option value=1>"+word['word_system_record_enable']+"</option>"+"<option value=0>"+word['word_system_record_disable']+"</option>");
+		
+		var op="add";
+	}
+	
+				
+	if(word['word_online']=='登录为'){
+		pop_buttons({
+			"确定":function(){
+				timepart_op(op,plan_id,timepart_id,"set")
+			},
+			"取消":function(){
+				pop_close("timepart");
+			}
+		},"timepart");
+	}else{
+		pop_buttons({
+			"Accept":function(){
+				timepart_op(op,plan_id,timepart_id,"set")
+			},
+			"Cancel":function(){
+				pop_close("timepart");
+			}
+		},"timepart");
+	}
+});
+
+function plan_type(type){
+	if(type==1){
+		$("#start_week").show();
+		$("#end_week").show();
+		$("#start_date").hide();
+		$("#end_date").hide();
+	}else{
+		$("#start_week").hide();
+		$("#end_week").hide();
+		$("#start_date").show();
+		$("#end_date").show();
+	}
+}
+</script>

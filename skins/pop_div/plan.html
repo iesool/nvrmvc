@@ -1,0 +1,67 @@
+<!--计划弹出层-->
+<input type="hidden" id="plan_name_yuan" value="" />
+<input type="hidden" id="plan_type_yuan" value="" />
+<table border="0">
+  <tr>
+    <td><span class="word_name">计划名称</span>：&nbsp;<input type="text" size="6" maxlength="4" name="plan_name" id="plan_name" value=""/>&nbsp;<span class="word_system_limit_4">最多4个字符</span>&nbsp;</td>
+  </tr>
+  <tr>
+    <td><span class="word_type">计划类型</span>：&nbsp;<input type="radio" name="plan_type" id="plan_type_1" checked /><span class="word_system_week_turn">周循环</span><input type="radio" name="plan_type" id="plan_type_2" /><span class="word_system_timepart">时间段</span></td>
+  </tr>
+  <tr>
+  	<td><span class="word_system_is_record">该计划时间段内</span>：&nbsp;<select id="is_record"></select></td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	$("button").button();
+	
+	var plan_id=$("#edit_plan_id").val();
+	$("#edit_plan_id").remove();
+	
+	if(plan_id){
+		$.getJSON("index.php?do=ajax&view=system_set&op=get_plan&plan_id="+plan_id,function(plan_arr){
+			$("#plan_name").val(plan_arr['Name']);
+			$("#plan_type_"+plan_arr['Type']).attr("checked",true);
+			
+			$("#plan_name_yuan").val(plan_arr['Name']);
+			$("#plan_type_yuan").val(plan_arr['Type']);
+			
+			
+			if(plan_arr['Is_record']==1){
+				var is_record="<option value=1 selected>"+word['word_system_record_enable']+"</option>"+"<option value=0>"+word['word_system_record_disable']+"</option>";
+			}else{
+				var is_record="<option value=1>"+word['word_system_record_enable']+"</option>"+"<option value=0 selected>"+word['word_system_record_disable']+"</option>";
+			}
+			$("#is_record").html(is_record);
+		});
+		var op="edit";
+	}else{
+		$("#is_record").html("<option value=1>"+word['word_system_record_enable']+"</option>"+"<option value=0>"+word['word_system_record_disable']+"</option>");
+		
+		var op="add";
+	}
+	
+	if(word['word_online']=='登录为'){
+		pop_buttons({
+			"确定":function(){
+				plan_op(op,plan_id,"set")
+			},
+			"取消":function(){
+				pop_close("plan");
+			}
+		},"plan");
+	}else{
+		pop_buttons({
+			"Accept":function(){
+				plan_op(op,plan_id,"set")
+			},
+			"Cancel":function(){
+				pop_close("plan");
+			}
+		},"plan");
+	}
+});
+</script>

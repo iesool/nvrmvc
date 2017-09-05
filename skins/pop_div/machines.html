@@ -1,0 +1,20 @@
+<!--设备切换-->
+<div style="overflow-y:scroll">
+  <table border="0" class="pop_table">
+    <thead>
+      <tr>
+        <!--<th width="20%">Id</th>-->
+        <th width="40%"><span class="word_name">名称</span></th>
+        <th width="40%">IP</th>
+      </tr>
+    </thead>
+    <tbody id="machines_table"><tr><td colspan="3"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中，请稍候...</span></td></tr></tbody>
+  </table>
+</div>
+
+<script type="text/javascript">	
+$(document).ready(function(){
+	language();						   
+	get_table("machines","index.php?do=ajax&view=console&op=get_machines&get=get",word['word_none']);				   
+});
+</script>

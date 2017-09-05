@@ -1,0 +1,795 @@
+<h3>
+  <table border="0" width="100%">
+    <tr>
+      <td align="left"><span class="word_disk_raid">RAID管理</span></td>
+      <td align="right"><a href="javascript:;" onClick="main_load('disk_raid')"><span class="word_refresh">刷新</span></a></td>
+    </tr>
+  </table>
+</h3>
+
+<!--操作按钮-->
+<div>
+  <table class="" cellpadding="0" cellspacing="0" width="100%">
+    <thead style="background:#CCC">
+      <tr>
+        <th><button id="raid_creat"><span class="word_disk_raid_creat">创建RAID</span></button></th>
+        <th><button id="raid_del"><span class="word_disk_raid_del">删除RAID</span></button></th>
+        <th><button id="hotspare_creat"><span class="word_disk_hotspare_creat">创建热备盘</span></button></th>
+        <th><button id="hotspare_del"><span class="word_disk_hotspare_del">删除热备盘</span></button></th>
+        <th><button id="disk_active"><span class="word_disk_disk_active">激活磁盘</span></button></th>
+        <th><button id="raid_active"><span class="word_disk_raid_active">激活RAID</span></button></th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
+<!--磁盘状态描述-->
+<div class="disk_description">
+  <table class="main_table">
+    <thead>
+      <tr>
+        <th colspan="2"><span class="word_disk_disk_description">磁盘状态描述</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><img src="../images/diskunuse.png" style="width:20px;height:20px;" /></td>
+        <td><span class="word_disk_disk_unuse">未使用</span></td>
+      </tr>
+      <tr>
+        <td><img src="../images/diskinuse.png" style="width:20px;height:20px;" /></td>
+        <td><span class="word_disk_disk_using">使用中</span></td>
+      </tr>
+      <tr>
+        <td><img src="../images/diskspare.png" style="width:20px;height:20px;" /></td>
+        <td><span class="word_disk_disk_hotspare">热备盘</span></td>
+      </tr>
+      <tr>
+        <td><img src="../images/diskinactive.png" style="width:20px;height:20px;" /></td>
+        <td><span class="word_disk_disk_unactive">未激活</span></td>
+      </tr>
+      <tr>
+        <td><img src="../images/diskdead.png" style="width:20px;height:20px;" /></td>
+        <td><span class="word_disk_disk_false">损坏</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--RAID列表-->
+<div class="raid_list" id="raid_load"><img src="../images/ajax-loader.gif" />&nbsp;<span class="word_loading">载入中...</span></div>
+<div class="raid_list" id="raid_list">
+  <table class="main_table">
+    <thead>
+      <tr>
+        <th><span class="word_disk_raid_name">RAID名称</span></th>
+        <th><span class="word_disk_raid_space">RAID容量</span></th>
+        <th><span class="word_disk_raid_level">RAID级别</span></th>
+        <th><span class="word_disk_raid_state">RAID状态</span></th>
+      </tr>
+    </thead>
+    <tbody id="raid_table"><tr><td colspan="4"><img src="../images/ajax-loader.gif" />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+  </table>
+</div>
+
+<!--磁盘阵列-->
+<div class="disk_table" id="disk_table"></div>
+
+  
+<!--RAID信息显示-->
+<div id="pop_raid_show" class="pop_div" title="RAID信息">
+  <div id="raid_show_load"><img src="../images/ajax-loader.gif" />&nbsp;<span class="word_loading">载入中...</span></div>
+  <table border="0" cellpadding="5" cellspacing="0" id="raid_show_table">
+    <tr>
+      <td width="40%"><span class="word_disk_raid_name">RAID名称</span></td>
+      <td id="raid_name">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_creat_time">创建时间</span></td>
+      <td id="raid_creat_time">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_level">RAID级别</span></td>
+      <td id="raid_level">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_size">阵列大小</span></td>
+      <td id="raid_size">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_disk_size">磁盘大小</span></td>
+      <td id="raid_disk_size">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_disk_num">阵列磁盘数</span></td>
+      <td id="raid_disk_num">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_all_disk_num">磁盘总数</span></td>
+      <td id="raid_all_disk">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_edit_time">更新时间</span></td>
+      <td id="raid_edit_time">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_state">状态</span></td>
+      <td id="raid_state">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_disk_used">可用磁盘数</span></td>
+      <td id="raid_disk_use">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_work_num">工作中磁盘数</span></td>
+      <td id="raid_disk_used">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_fault_num">失败磁盘数</span></td>
+      <td id="raid_disk_fault">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_c_size">块大小</span></td>
+      <td id="raid_c_size">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_disk">所用磁盘</span></td>
+      <td id="raid_disk">&nbsp;</td>
+    </tr>
+    <tr>
+      <td><span class="word_disk_raid_hotspare">热备盘</span></td>
+      <td id="raid_hotspare">&nbsp;</td>
+    </tr>
+  </table>
+</div>
+
+<!--创建RAID-->
+<div id="pop_raid_creat" class="pop_div" title="创建RAID">
+  <form id="form_raid_creat">
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="20%"><span class="word_disk_select">选择磁盘</span></td>
+        <td width="35%"><select id="unraid_disk" name="unraid_disk[]" size="10" style="width:100%" multiple></select></td>
+        <td width="10%" style="float:left">
+          <input type="button" value=">"  style="width:30px" onclick="add_disk('unraid_disk','selected_unraid_disk')" />
+          <input type="button" value=">>" style="width:30px" onclick="add_all_disk('unraid_disk','selected_unraid_disk')" />
+          <input type="button" value="<"  style="width:30px" onclick="remove_disk('unraid_disk','selected_unraid_disk')" />
+          <input type="button" value="<<" style="width:30px" onclick="remove_all_disk('unraid_disk','selected_unraid_disk')" />
+        </td>
+        <td width="35%"><select id="selected_unraid_disk" name="selected_unraid_disk[]"  size="10" style="width:100%" multiple></select></td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_raid_level">RAID级别</span></td>
+        <td>
+          <select name="raid_level2" id="raid_level2">
+            <option value="0">RAID0</option>
+            <option value="1">RAID1</option>
+            <option value="5" selected="selected">RAID5</option>
+            <option value="6">RAID6</option>
+            <option value="10">RAID10</option>
+          </select>
+        </td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_raid_c_size">块大小</span></td>
+        <td>
+          <select name="raid_chunk" id="raid_chunk">
+            <option value="8">8</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="64">64</option>
+            <option value="128">128</option>
+            <option value="256" selected="selected">256</option>
+            <option value="512">512</option>
+            <option value="1024">1024</option>
+          </select>
+          KB
+        </td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--删除RAID-->
+<div id="pop_raid_del" class="pop_div" title="删除RAID">
+  <form id="form_raid_del">
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="30%"><span class="word_disk_raid_select">选择RAID</span></td>
+        <td width="70%"><select id="raid_del_list" name="raid_del_list[]" size="10" style="width:100%" multiple></select></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--创建热备盘-->
+<div id="pop_hotspare_creat" class="pop_div" title="创建热备盘">
+  <form id="form_hotspare_creat">
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="20%"><span class="word_disk_select">选择磁盘</span></td>
+        <td width="35%"><select id="unhotspare_disk" name="unhotspare_disk[]" size="10" style="width:100%" multiple></select></td>
+        <td width="10%" style="float:left">
+          <input type="button" value=">"  style="width:30px" onclick="add_disk('unhotspare_disk','selected_unhotspare_disk')" />
+          <input type="button" value=">>" style="width:30px" onclick="add_all_disk('unhotspare_disk','selected_unhotspare_disk')" />
+          <input type="button" value="<"  style="width:30px" onclick="remove_disk('unhotspare_disk','selected_unhotspare_disk')" />
+          <input type="button" value="<<" style="width:30px" onclick="remove_all_disk('unhotspare_disk','selected_unhotspare_disk')" />
+        </td>
+        <td width="35%"><select id="selected_unhotspare_disk" name="selected_unhotspare_disk[]"  size="10" style="width:100%" multiple></select></td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_raid_select">选择RAID</span></td>
+        <td><select id="hotspare_raid" name="hotspare_raid"></select></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--删除热备盘-->
+<div id="pop_hotspare_del" class="pop_div" title="删除热备盘">
+  <form id="form_hotspare_del">
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="30%"><span class="word_disk_hotspare_select">选择热备盘</span></td>
+        <td width="70%"><select id="hotspare_disk" name="hotspare_disk[]" size="10" style="width:100%" multiple></select></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--激活磁盘-->
+<div id="pop_disk_active" class="pop_div" title="激活磁盘">
+  <form id="form_disk_active">
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="20%"><span class="word_disk_select">选择磁盘</span></td>
+        <td width="35%"><select id="unactive_disk" name="unactive_disk[]" size="10" style="width:100%" multiple></select></td>
+        <td width="10%" style="float:left">
+          <input type="button" value=">"  style="width:30px" onclick="add_disk('unactive_disk','selected_unactive_disk')" />
+          <input type="button" value=">>" style="width:30px" onclick="add_all_disk('unactive_disk','selected_unactive_disk')" />
+          <input type="button" value="<"  style="width:30px" onclick="remove_disk('unactive_disk','selected_unactive_disk')" />
+          <input type="button" value="<<" style="width:30px" onclick="remove_all_disk('unactive_disk','selected_unactive_disk')" />
+        </td>
+        <td width="35%"><select id="selected_unactive_disk" name="selected_unactive_disk[]"  size="10" style="width:100%" multiple></select></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	$("button").button();
+	
+	//自动激活RAID
+	$.ajax({url:"index.php?do=ajax&view=disk_raid&op=raid_active",async:false});
+	
+	//获取jobd
+	var jobd=$.ajax({url:"index.php?do=ajax&view=disk_raid&op=get_jobd",async:false});
+	var jobd=jobd.responseText/100;
+	var box_num=parseInt(jobd);
+	var sd_num=Math.round((jobd-box_num)*100/4);
+	
+	$("#raid_load").show();
+	$("#raid_list").hide();
+	
+	//获取RAID列表
+	get_table("raid","index.php?do=ajax&view=disk_raid&op=get_raid_list",word['word_none']);
+	
+	//获取磁盘阵列
+	$.getJSON("index.php?do=ajax&view=disk_raid&op=get_disk_matrix",function(disk_matrix){
+		for(h=0;h<box_num;h++){
+			$('#disk_table').append('<table border="0" cellpadding="0" cellspacing="0" style="margin-top:10px"><thead><tr><th colspan=4 style="background:#ccc">'+h+'</th></tr></thead><tbody id="box_table_'+h+'"></tbody></table>');
+			var box_str='';
+			for(i=0;i<sd_num;i++){
+				box_str+='<tr>';
+				if(disk_matrix.length==0){
+					for(j=0;j<4;j++){
+						box_str+='<td>&nbsp;</td>';
+					}
+				}else{
+					for(j=0;j<4;j++){
+						var num=(sd_num-i-1)*4+j+1;
+						if(box_num==1){
+							var disk_num=num;
+						}else{
+							var disk_num=h+"-"+num;
+						}
+						
+						if(disk_matrix[disk_num]){
+							var disk_cell=disk_matrix[disk_num].split("+");
+							box_str+='<td id="dev_show'+disk_cell[1]+'">'+disk_cell[0]+'</td>';
+						}else{
+							box_str+='<td>&nbsp;</td>';
+						}
+					}
+				}
+				box_str+='</tr>';
+			}
+			$('#box_table_'+h).html(box_str);
+		}
+		
+		$("#raid_load").hide();
+		$("#raid_list").show();
+	});
+	
+	
+	//创建RAID
+	$("#raid_creat").click(function(){
+		$("#form_raid_creat").resetForm();
+		
+		var unraid_disk=document.getElementById('unraid_disk');	
+		unraid_disk.options.length=0;
+		var selected_unraid_disk=document.getElementById('selected_unraid_disk');
+		selected_unraid_disk.options.length=0;
+		
+		$.getJSON("index.php?do=ajax&view=disk_raid&op=get_unraid_disk",function(disk_arr){
+			for(i in disk_arr){
+				unraid_disk.options[unraid_disk.length]=new Option(disk_arr[i],disk_arr[i]);
+			}
+		});
+		$("#pop_raid_creat").dialog("open");							 
+	});
+	
+	//删除RAID
+	$("#raid_del").click(function(){
+		$("#form_raid_del").resetForm();
+		
+		var raid_del_list=document.getElementById('raid_del_list');	
+		raid_del_list.options.length=0;
+		
+		$.getJSON("index.php?do=ajax&view=disk_raid&op=get_raid_name",function(raid_name_arr){
+			for(i in raid_name_arr){
+				raid_del_list.options[raid_del_list.length]=new Option(raid_name_arr[i],raid_name_arr[i]);
+			}
+		});
+		$("#pop_raid_del").dialog("open");							 
+	});
+	
+	//创建热备盘
+	$("#hotspare_creat").click(function(){
+		$("#form_hotspare_creat").resetForm();
+		
+		var unhotspare_disk=document.getElementById('unhotspare_disk');	
+		unhotspare_disk.options.length=0;
+		var selected_unhotspare_disk=document.getElementById('selected_unhotspare_disk');
+		selected_unhotspare_disk.options.length=0;
+		var hotspare_raid=document.getElementById('hotspare_raid');
+		hotspare_raid.options.length=0;
+		
+		$.getJSON("index.php?do=ajax&view=disk_raid&op=get_unraid_disk",function(disk_arr){
+			for(i in disk_arr){
+				unhotspare_disk.options[unhotspare_disk.length]=new Option(disk_arr[i],disk_arr[i]);
+			}
+		});
+		
+		$.getJSON("index.php?do=ajax&view=disk_raid&op=get_raid_name",function(raid_name_arr){
+			if(raid_name_arr.length){
+				for(i in raid_name_arr){
+					hotspare_raid.options[hotspare_raid.length]=new Option(raid_name_arr[i],raid_name_arr[i]);
+				}
+			}else{
+				hotspare_raid.options[hotspare_raid.length]=new Option(word['word_none'],0);																  
+			}
+		});
+		$("#pop_hotspare_creat").dialog("open");							 
+	});
+	
+	//删除热备盘
+	$("#hotspare_del").click(function(){
+		$("#form_hotspare_del").resetForm();
+		
+		var hotspare_disk=document.getElementById('hotspare_disk');	
+		hotspare_disk.options.length=0;
+		
+		$.getJSON("index.php?do=ajax&view=disk_raid&op=get_hotspare_disk",function(hotspare_disk_arr){
+			for(i in hotspare_disk_arr){
+				hotspare_disk.options[hotspare_disk.length]=new Option(hotspare_disk_arr[i],hotspare_disk_arr[i]);
+			}
+		});
+		$("#pop_hotspare_del").dialog("open");							 
+	});
+	
+	//激活磁盘
+	$("#disk_active").click(function(){
+		$("#form_disk_active").resetForm();
+		
+		var unactive_disk=document.getElementById('unactive_disk');	
+		unactive_disk.options.length=0;
+		var selected_unactive_disk=document.getElementById('selected_unactive_disk');
+		selected_unactive_disk.options.length=0;
+		
+		$.getJSON("index.php?do=ajax&view=disk_raid&op=get_unactive_disk",function(disk_arr){
+			for(i in disk_arr){
+				unactive_disk.options[unactive_disk.length]=new Option(disk_arr[i],disk_arr[i]);
+			}
+		});
+		$("#pop_disk_active").dialog("open");							 
+	});
+	
+	//激活RAID
+	$("#raid_active").click(function(){
+		if(confirm(word['word_disk_raid_active_confirm'])){
+			$.ajax({url:"index.php?do=ajax&view=disk_raid&op=raid_active",async:false});
+			main_load("disk_raid");
+		}
+	});
+	
+	//用户操作弹出层
+	if(word['word_online']=="登录为"){
+		$("#pop_raid_show").dialog({
+			height: 550,
+			width: 370,
+			modal: true,
+			title:word['word_disk_raid_info'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_raid_creat").dialog({
+			height: 400,
+			width: 600,
+			modal: true,
+			title:word['word_disk_raid_creat'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"创建": function() {
+					raid_creat(); 
+				},
+				"取消": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_raid_del").dialog({
+			height: 330,
+			width: 350,
+			modal: true,
+			title:word['word_disk_raid_del'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"删除": function() {
+					raid_del(); 
+				},
+				"取消": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_hotspare_creat").dialog({
+			height: 350,
+			width: 600,
+			modal: true,
+			title:word['word_disk_hotspare_creat'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"创建": function() {
+					hotspare_creat(); 
+				},
+				"取消": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_hotspare_del").dialog({
+			height: 330,
+			width: 350,
+			modal: true,
+			title:word['word_disk_hotspare_del'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"删除": function() {
+					hotspare_del(); 
+				},
+				"取消": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_disk_active").dialog({
+			height: 320,
+			width: 600,
+			modal: true,
+			title:word['word_disk_disk_active'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"激活": function() {
+					disk_active(); 
+				},
+				"取消": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+	}else{
+		$("#pop_raid_show").dialog({
+			height: 550,
+			width: 370,
+			modal: true,
+			title:word['word_disk_raid_info'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_raid_creat").dialog({
+			height: 400,
+			width: 600,
+			modal: true,
+			title:word['word_disk_raid_creat'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Create": function() {
+					raid_creat(); 
+				},
+				"Cancel": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_raid_del").dialog({
+			height: 330,
+			width: 350,
+			modal: true,
+			title:word['word_disk_raid_del'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Delete": function() {
+					raid_del(); 
+				},
+				"Cancel": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_hotspare_creat").dialog({
+			height: 350,
+			width: 600,
+			modal: true,
+			title:word['word_disk_hotspare_creat'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Create": function() {
+					hotspare_creat(); 
+				},
+				"Cancel": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_hotspare_del").dialog({
+			height: 330,
+			width: 350,
+			modal: true,
+			title:word['word_disk_hotspare_del'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Delete": function() {
+					hotspare_del(); 
+				},
+				"Cancel": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_disk_active").dialog({
+			height: 320,
+			width: 600,
+			modal: true,
+			title:word['word_disk_disk_active'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Active": function() {
+					disk_active(); 
+				},
+				"Cancel": function() {
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		
+	}
+	
+});
+
+
+
+//显示RAID对应的磁盘
+function raid_disk(disk_str,$state){
+	disk_arr=disk_str.split(",");
+	for(i in disk_arr){
+		if(disk_arr[i]){
+			if($state==1){
+				document.getElementById('dev_show'+disk_arr[i]).style.background="url(images/tool-nav.png)";
+			}else{
+				document.getElementById('dev_show'+disk_arr[i]).style.background="url(images/diskbg.png)";
+			}
+		}
+	}
+}
+
+
+//显示RAID信息
+function raid_show(raid_name){
+	$("#raid_show_load").show();
+	$("#raid_show_table").hide();
+	$.getJSON("index.php?do=ajax&view=disk_raid&op=get_raid_show&raid_name="+raid_name,function(raid_arr){
+		$("#raid_name").html(raid_name);
+		$("#raid_creat_time").html(raid_arr['raid_creat_time']);
+		$("#raid_level").html(raid_arr['raid_level']);
+		$("#raid_size").html(raid_arr['raid_size']);
+		$("#raid_disk_size").html(raid_arr['raid_disk_size']);
+		$("#raid_disk_num").html(raid_arr['raid_disk_num']);
+		$("#raid_all_disk").html(raid_arr['raid_all_disk']);
+		$("#raid_edit_time").html(raid_arr['raid_edit_time']);
+		$("#raid_state").html(raid_arr['raid_state']);
+		$("#raid_disk_use").html(raid_arr['raid_disk_use']);
+		$("#raid_disk_used").html(raid_arr['raid_disk_used']);
+		$("#raid_disk_fault").html(raid_arr['raid_disk_fault']);
+		$("#raid_c_size").html(raid_arr['raid_c_size']);
+		$("#raid_disk").html(raid_arr['raid_disk']);
+		$("#raid_hotspare").html(raid_arr['raid_hotspare']);
+		$("#raid_show_load").hide();
+		$("#raid_show_table").show();
+	});
+	$("#pop_raid_show").dialog("open");
+}
+
+
+//创建RAID
+function raid_creat(){
+	select_all("selected_unraid_disk");
+	if(!$("#selected_unraid_disk").val()){
+		alert(word['word_disk_select_please']);
+		return false;
+	}
+	switch(parseInt($("#raid_level2").val())){
+		case 0:
+		if($("#selected_unraid_disk").val().length<2){
+			alert(word['word_disk_raid0_2']);
+			return false;
+		}
+		break;
+		
+		case 1:
+		if($("#selected_unraid_disk").val().length<2){
+			alert(word['word_disk_raid1_2']);
+			return false;
+		}
+		break;
+		
+		case 5:
+		if($("#selected_unraid_disk").val().length<3){
+			alert(word['word_disk_raid5_3']);
+			return false;
+		}
+		break;
+		
+		case 6:
+		if($("#selected_unraid_disk").val().length<4){
+			alert(word['word_disk_raid6_4']);
+			return false;
+		}
+		break;
+		
+		case 10:
+		if($("#selected_unraid_disk").val().length<4){
+			alert(word['word_disk_raid10_4']);
+			return false;
+		}
+		break;
+		
+		default:
+		return false;
+		break;
+	}
+	
+	//判断是否为同一盘柜
+	var a=new Array();
+	var selected_unraid_disk=$("#selected_unraid_disk").val();
+	for(i in selected_unraid_disk){
+		var b=selected_unraid_disk[i].split("-");
+		if(!in_array(b[0],a)&&b[1]){
+			a.push(b[0]);
+		}
+	}
+	if(a.length>1){
+		alert(word['']);
+		return false;
+	}
+	
+	$.post("index.php?do=ajax&view=disk_raid&op=raid_creat",$("#form_raid_creat").serialize(),function(backinfo){
+		if(backinfo){
+			alert(word['word_disk_same_cab_please']);
+		}
+	});
+	main_load("disk_raid");
+	$("#pop_raid_creat").dialog("close");
+}
+
+//删除RAID
+function raid_del(){
+	if(!$("#raid_del_list").val()){
+		alert(word['word_disk_raid_please']);
+		return false;
+	}
+	if(confirm(word['word_disk_raid_del_confirm'])){
+		$.post("index.php?do=ajax&view=disk_raid&op=raid_del",$("#form_raid_del").serialize(),function(backinfo){
+			if(backinfo){
+				alert(backinfo+word['word_disk_raid_del_failed']);
+			}
+		});
+		main_load("disk_raid");
+		$("#pop_raid_del").dialog("close");
+	}
+}
+
+//创建热备盘
+function hotspare_creat(){
+	select_all("selected_unhotspare_disk");
+	if(!$("#selected_unhotspare_disk").val()){
+		alert(word['word_disk_select_please']);
+		return false;
+	}
+	if($("#hotspare_raid").val()==0){
+		alert(word['word_disk_raid_please']);
+		return false;
+	}
+	
+	$.post("index.php?do=ajax&view=disk_raid&op=hotspare_creat",$("#form_hotspare_creat").serialize(),function(backinfo){
+		if(backinfo){
+			alert(word['word_disk_raid0_alert']);
+		}																								   
+	});
+	main_load("disk_raid");
+	$("#pop_hotspare_creat").dialog("close");
+}
+
+//删除热备盘
+function hotspare_del(){
+	if(!$("#hotspare_disk").val()){
+		alert(word['word_disk_hotspare_please']);
+		return false;
+	}
+	if(confirm(word['word_disk_hotspare_del_confirm'])){
+		$.post("index.php?do=ajax&view=disk_raid&op=hotspare_del",$("#form_hotspare_del").serialize());
+		main_load("disk_raid");
+		$("#pop_hotspare_del").dialog("close");
+	}
+}
+
+//激活磁盘
+function disk_active(){
+	select_all("selected_unactive_disk");
+	if(!$("#selected_unactive_disk").val()){
+		alert(word['']);
+		return false;
+	}
+	$.post("index.php?do=ajax&view=disk_raid&op=disk_active",$("#form_disk_active").serialize());
+	main_load("disk_raid");
+	$("#pop_disk_active").dialog("close");	
+}
+</script>
+

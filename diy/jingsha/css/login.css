@@ -1,0 +1,20 @@
+*{margin:0; padding:0;}
+.clear{ clear:both; height:0; overflow:hidden; }
+
+#main{position:relative; width:100%; background:url("../images/bg.png") repeat center center;}
+
+#main .header{ height:70px;*float:right;  }
+#main .header img{ border:none;*float:none; float:right }
+
+#main .text{ height:70px;*float:left;*margin-left:7%;*margin-top:5%}
+#main .text img{ border:none;*float:none;*margin-left:0px;*margin-top:0px; float:left;margin-left:17%;}
+
+#main .signin{ width:100%; }
+#main .signin .wrap{ margin:0 auto; width:400px; height:307px; position:relative; margin-top:80px; }
+#main  .signin .wrap .ctl{ position:absolute; top:65px; left:80px; width:180px; }
+#main .signin .wrap .ctl .inputctl{ float:left; border:1px solid #352e2d; width:180px; height:25px; margin-bottom:10px; font-size:20px; }
+#main .signin .wrap .ctl .btn{ float:right; width:94px; height:27px; border:none; text-indent:9999; background:url("../images/btn_03.gif") no-repeat -1px 0px; margin-top:5px; }
+
+
+#main .copyright{ width:100%; height:50px; background:url("../images/copyright_03.gif") no-repeat center center; margin-top:50px; }
+

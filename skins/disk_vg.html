@@ -1,0 +1,796 @@
+<h3>
+  <table border="0" width="100%">
+    <tr>
+      <td align="left"><span class="word_disk_vg">存储池管理</span></td>
+      <td align="right"><a href="javascript:;" onClick="main_load('disk_vg')"><span class="word_refresh">刷新</span></a></td>
+    </tr>
+  </table>
+</h3>
+
+<!--操作按钮-->
+<div>
+  <table class="" cellpadding="0" cellspacing="0" width="100%">
+    <thead style="background:#CCC">
+      <tr>
+        <th><button id="vg_creat"><span class="word_disk_vg_creat">创建存储池</span></button></th>
+        <th><button id="lv_creat"><span class="word_disk_lv_creat">创建LUN</span></button></th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
+<!--存储池-->
+<div class="vg_table">
+  <strong><span class="word_disk_vg">存储池</span></strong>
+  <table class="main_table">
+    <thead>
+      <tr>
+        <th width="15%"><span class="word_disk_vg_name">存储池名称</span></th>
+        <th width="15%"><span class="word_operation">操作</span></th>
+        <th width="30%"><span class="word_disk_raid">RAID组</span></th>
+        <th width="20%"><span class="word_space">容量</span></th>
+        <th width="20%"><span class="word_disk_unassign">未分配空间</span></th>
+      </tr>
+    </thead>
+    <tbody id="vg_table"><tr><td colspan="5"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+  </table>
+</div>
+
+<!--LUN-->
+<div class="lv_table">
+  <strong><span class="word_disk_lv">LUN</span></strong>
+  <table class="main_table">
+    <thead>
+      <tr>
+        <th width="15%" id="lv_name_0"><span class="word_disk_lv_name">LUN名称</span></th>
+        <th width="15%" id="lv_operation"><span class="word_operation">操作</span></th>
+        <th width="20%" id="lv_vg"><span class="word_disk_vg">所在存储池</span></th>
+        <th width="20%" id="lv_space"><span class="word_space">容量</span></th>
+        <th width="20%" id="lv_mount"><span class="word_disk_mount">挂载点</span></th>
+        <th width="10%" id="lv_df"><span class="word_disk_rate">占用率</span></th>
+      </tr>
+    </thead>
+    <tbody id="lv_table"><tr><td colspan="6"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+  </table>
+</div>
+
+<!--创建存储池-->
+<div id="pop_vg_creat" title="创建存储池" class="pop_div">
+  <form id="form_vg_creat">
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="30%"><span class="word_disk_vg_name">存储池名称</span></td>
+        <td width="70%"><input type="text" name="vg_name" id="vg_name" value="" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_pv">物理卷</span></td>
+        <td><select id="pv_list" name="pv_list[]" size="10" style="width:100%" multiple></select></td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_raid_c_size">块大小</span></td>
+        <td>
+          <input type="text" id="pe_size" name="pe_size" value="32" size="10" onkeyup="this.value=this.value.replace(/[^\d]/g,'')"/>
+          <select id="pe_unit" name="pe_unit">
+            <option value="M">M</option>
+            <option value="K">K</option>
+            <option value="G">G</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--扩展存储池-->
+<div id="pop_vg_extend" title="扩展存储池" class="pop_div">
+  <form id="form_vg_extend">
+    <input type="hidden" name="extend_vg_name" id="extend_vg_name" value="" />
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="40%"><span class="word_disk_pv">空闲的物理卷</span></td>
+        <td width="60%"><select name="free_pv_list" id="free_pv_list"></select></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--缩减存储池-->
+<div id="pop_vg_reduce" title="缩减存储池" class="pop_div">
+  <form id="form_vg_reduce">
+    <input type="hidden" name="reduce_vg_name" id="reduce_vg_name" value="" />
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="40%"><span class="word_disk_pv">已用的物理卷</span></td>
+        <td width="60%"><select name="used_pv_list" id="used_pv_list"></select></td>
+      </tr>
+    </table>
+  </form>
+  <font color="#FF0000"><span class="word_disk_vg_reduce_careful">本操作有可能导致该存储池所有的LUN中的数据丢失，请慎重操作！</span></font>
+</div>
+
+<!--创建LUN-->
+<div id="pop_lv_creat" title="创建LUN" class="pop_div">
+  <form id="form_lv_creat">
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="50%"><span class="word_disk_vg">存储池</span></td>
+        <td width="50%"><select name="vg_list" id="vg_list"></select></td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_lv_name">LUN名称</span></td>
+        <td><input type="text" name="lv_name" id="lv_name" value="" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_space">容量</span>（<span class="word_disk_lv_less_300">不小于300G</span>）</td>
+        <td>
+          <input type="text" name="lv_size" id="lv_size" value="" size="13" />
+          <select id="lv_unit" name="lv_unit">
+            <option value="G">G</option>
+            <option value="T">T</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_free_space">可用存储池空间</span></td>
+        <td id="free_vg_size"></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--扩展LUN-->
+<div id="pop_lv_extend" title="扩展LUN" class="pop_div">
+  <form id="form_lv_extend">
+  	<input type="hidden" name="extend_lv_name" id="extend_lv_name" value="" />
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="40%"><span class="word_disk_space_now">当前LUN容量</span></td>
+        <td width="60%" id="used_lv_size"></td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_free_space">存储池剩余容量</span></td>
+        <td id="extend_vg_size"></td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_extend_space">要扩展的容量</span></td>
+        <td>
+          <input type="text" name="extend_lv_size" id="extend_lv_size" value="" size="13" onKeyUp="this.value=this.value.replace(/[^\d]/g,'')" />
+          <select name="extend_lv_unit" id="extend_lv_unit">
+            <option value="G">G</option>
+            <option value="T">T</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--创建文件系统-->
+<div id="pop_lv_mkfs" title="创建文件系统" class="pop_div">
+  <form id="form_lv_mkfs">
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="40%">LUN</td>
+        <td width="60%" id="fs_lv_name"></td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_file_system">文件系统格式</span></td>
+        <td>XFS</td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--创建映射-->
+<div id="pop_lv_mount" title="创建映射" class="pop_div">
+  <form id="form_lv_mount">
+    <table border="0" cellpadding="5" cellspacing="0">
+      <tr>
+        <td width="40%">LUN</td>
+        <td width="60%" id="mount_lv_name"></td>
+      </tr>
+      <tr>
+        <td><span class="word_disk_mount_path">映射目录名称</span></td>
+        <td><select name="mount_path" id="mount_path"></select></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<!--录像自动删除-->
+<!--<div id="pop_auto_del" title="录像自动删除" class="pop_div">
+  <form id="form_auto_del">
+    <table border="0" class="pop_table">
+      <thead>
+        <tr>
+          <th width="20%">组</th>
+          <th>按空间自动删除</th>
+          <th>保留空间比例</th>
+          <th>按时间自动删除</th>
+          <th>保留时间长度</th>
+        </tr>
+      </thead>
+      <tbody id="auto_del_table"></tbody>
+    </table>
+  </form>
+</div>-->
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	$("button").button();
+	
+	get_table("vg","index.php?do=ajax&view=disk_vg&op=get_vg_list",word['word_none']);
+	get_table("lv","index.php?do=ajax&view=disk_vg&op=get_lv_list",word['word_none']);
+	
+	//创建存储池
+	$("#vg_creat").click(function(){
+		$("#form_vg_creat").resetForm();
+		
+		var pv_list=document.getElementById('pv_list');	
+		pv_list.options.length=0;
+		
+		$.getJSON("index.php?do=ajax&view=disk_vg&op=get_pv_list",function(raid_name_arr){
+			for(i in raid_name_arr){
+				pv_list.options[pv_list.length]=new Option(raid_name_arr[i],"/dev/"+raid_name_arr[i]);
+			}
+		});
+		$("#pop_vg_creat").dialog("open");	  
+	});
+	
+	//创建lun
+	$("#lv_creat").click(function(){
+		$("#form_lv_creat").resetForm();	
+		
+		var vg_list=document.getElementById('vg_list');	
+		vg_list.options.length=0;
+		
+		$.getJSON("index.php?do=ajax&view=disk_vg&op=get_vg_list",function(vg_arr){
+			if(vg_arr.length){
+				for(i in vg_arr){
+					vg_list.options[vg_list.length]=new Option(vg_arr[i]['name'],vg_arr[i]['name']);
+				}
+				$("#free_vg_size").html(vg_arr[0]['free']);
+			}else{
+				vg_list.options[vg_list.length]=new Option(word['word_none'],0);
+			}
+		});
+		$("#pop_lv_creat").dialog("open");						  
+	});
+	$("#vg_list").change(function(){
+		$.getJSON("index.php?do=ajax&view=disk_vg&op=get_vg_list",function(vg_arr){
+			for(i in vg_arr){
+				if(vg_arr[i]['name']==$("#vg_list").val()){
+					$("#free_vg_size").html(vg_arr[i]['free']);
+				}
+			}
+		});
+	});
+	
+	//录像自动删除
+	/*$("#auto_del").click(function(){
+		var auto_del_table=document.getElementById('auto_del_table');
+		$("#auto_del_table").empty();
+		$("#form_auto_del").resetForm();
+		$.getJSON("index.php?do=ajax&view=disk_vg&op=get_auto_del",function(auto_del_arr){
+			for(i in auto_del_arr){
+				var row=auto_del_table.insertRow(i);
+				for(j in auto_del_arr[i]){
+					var cell=row.insertCell(j);
+					cell.innerHTML=auto_del_arr[i][j];
+				}
+			}
+		});
+		$("#pop_auto_del").dialog("open");
+	});*/
+	
+	//弹出层
+	if(word['word_online']=="登录为"){
+		$("#pop_vg_creat").dialog({
+			height: 390,
+			width: 350,
+			modal: true,
+			title:word['word_disk_vg_creat'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					vg_creat(); 
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_vg_extend").dialog({
+			height: 175,
+			width: 350,
+			modal: true,
+			title:word['word_disk_vg_extend'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					vg_extend_enter(); 
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_vg_reduce").dialog({
+			height: 200,
+			width: 430,
+			modal: true,
+			title:word['word_disk_vg_reduce'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					vg_reduce_enter(); 
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_lv_creat").dialog({
+			height: 270,
+			width: 350,
+			modal: true,
+			title:word['word_disk_lv_creat'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					lv_creat();
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_lv_extend").dialog({
+			height: 225,
+			width: 370,
+			modal: true,
+			title:word['word_disk_lv_extend'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					lv_extend_enter();
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_lv_mkfs").dialog({
+			height: 200,
+			width: 350,
+			modal: true,
+			title:word['word_disk_mkfs'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					lv_mkfs_enter();
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_lv_mount").dialog({
+			height: 200,
+			width: 350,
+			modal: true,
+			title:word['word_disk_mount'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					lv_mount_enter();
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		/*$("#pop_auto_del").dialog({
+			height: 600,
+			width: 800,
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					auto_del();
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});*/
+	}else{
+		$("#pop_vg_creat").dialog({
+			height: 390,
+			width: 350,
+			modal: true,
+			title:word['word_disk_vg_creat'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					vg_creat(); 
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_vg_extend").dialog({
+			height: 175,
+			width: 350,
+			modal: true,
+			title:word['word_disk_vg_extend'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					vg_extend_enter(); 
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_vg_reduce").dialog({
+			height: 200,
+			width: 430,
+			modal: true,
+			title:word['word_disk_vg_reduce'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					vg_reduce_enter(); 
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_lv_creat").dialog({
+			height: 270,
+			width: 350,
+			modal: true,
+			title:word['word_disk_lv_creat'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					lv_creat();
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_lv_extend").dialog({
+			height: 225,
+			width: 370,
+			modal: true,
+			title:word['word_disk_lv_extend'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					lv_extend_enter();
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_lv_mkfs").dialog({
+			height: 200,
+			width: 350,
+			modal: true,
+			title:word['word_disk_mkfs'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					lv_mkfs_enter();
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		$("#pop_lv_mount").dialog({
+			height: 200,
+			width: 350,
+			modal: true,
+			title:word['word_disk_mount'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					lv_mount_enter();
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});
+		/*$("#pop_auto_del").dialog({
+			height: 600,
+			width: 800,
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					auto_del();
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			}
+		});*/
+		
+		
+		
+	}
+});
+
+
+//扩展存储池
+function vg_extend(vg_name){
+	$("#form_vg_extend").resetForm();
+	$("#extend_vg_name").val(vg_name);
+	
+	var free_pv_list=document.getElementById('free_pv_list');	
+	free_pv_list.options.length=0;
+	
+	$.getJSON("index.php?do=ajax&view=disk_vg&op=get_pv_list",function(raid_name_arr){
+		count=0;
+		for(i in raid_name_arr){
+			if(raid_name_arr[i]){
+				count++;
+			}
+		}
+		if(count==0){
+			free_pv_list.options[free_pv_list.length]=new Option(word['word_disk_pv_none'],0);
+		}else{
+			for(i in raid_name_arr){
+				free_pv_list.options[free_pv_list.length]=new Option(raid_name_arr[i],"/dev/"+raid_name_arr[i]);
+			}
+		}
+	});
+	$("#pop_vg_extend").dialog("open");
+}
+//缩减存储池
+function vg_reduce(vg_name,used_pv){
+	$("#form_vg_reduce").resetForm();
+	$("#reduce_vg_name").val(vg_name);
+	
+	var used_pv_list=document.getElementById('used_pv_list');	
+	used_pv_list.options.length=0;
+	
+	for(i in used_pv){
+		used_pv_list.options[used_pv_list.length]=new Option(used_pv[i],"/dev/"+used_pv[i]);
+	}
+	$("#pop_vg_reduce").dialog("open");
+}
+
+//扩展LUN
+function lv_extend(lv_name,used_lv_size,extend_vg_size){
+	$("#form_lv_extend").resetForm();
+	$("#extend_lv_name").val(lv_name);
+	$("#used_lv_size").html(used_lv_size);
+	$("#extend_vg_size").html(extend_vg_size);
+	$("#pop_lv_extend").dialog("open");
+}
+//创建文件系统
+function lv_mkfs(lv_name){
+	$("#fs_lv_name").html(lv_name);
+	$("#pop_lv_mkfs").dialog("open");
+}
+//创建映射
+function lv_mount(lv_name){
+	$("#mount_lv_name").html(lv_name);
+	
+	var mount_path=document.getElementById('mount_path');
+	mount_path.options.length=0;
+	
+	$.getJSON("index.php?do=ajax&view=disk_vg&op=get_umount_groups",function(group_arrs){
+		mount_path.options[mount_path.length]=new Option(word['word_select'],0);																	 
+		for(i in group_arrs){
+			mount_path.options[mount_path.length]=new Option(group_arrs[i]['Name'],group_arrs[i]['Mount_Path']);
+		}
+	});
+	$("#pop_lv_mount").dialog("open");
+}
+
+//创建存储池
+function vg_creat(){
+	if(!$("#vg_name").val()){
+		alert(word['word_disk_vg_name_please']);
+		return false;
+	}
+	if($("#vg_name").val().length<6){
+		alert(word['word_disk_vg_name_6']);
+		return false;
+	}
+	if($("#vg_name").val().match(/[\u4e00-\u9fa5]|(?:^\s+)|(?:\s+$)/)!=null){
+		alert(word['word_disk_vg_name_chinese']);
+		return false;
+	}
+	if(!$("#pv_list").val()){
+		alert(word['word_disk_pv_please']);
+		return false;
+	}
+	if(!$("#pe_size").val()){
+		alert(word['word_disk_chuck_please']);
+		return false;
+	}
+	
+	$.post("index.php?do=ajax&view=disk_vg&op=vg_creat",$("#form_vg_creat").serialize(),function(backinfo){
+		if(backinfo!=0){																								 
+			alert(word['word_disk_vg_failed']);
+		}
+	});
+	main_load("disk_vg");
+	$("#pop_vg_creat").dialog("close");
+}
+//删除存储池
+function vg_del(vg_name){
+	if(confirm(word['word_disk_vg_del_confirm'])){
+		var backinfo=$.ajax({url:"index.php?do=ajax&view=disk_vg&op=vg_del&vg_name="+vg_name,async:false});
+		var backarr=backinfo.responseText.split(" ");
+		if(backarr[5]=='successfully'){
+			main_load("disk_vg");
+		}else{
+			alert(word['word_disk_del_lun_please']);
+		}
+	}
+}
+//扩展存储池
+function vg_extend_enter(){
+	if($("#free_pv_list").val()==0){
+		alert(word['word_disk_no_pv_use']);
+		return false;
+	}
+	$.post("index.php?do=ajax&view=disk_vg&op=vg_extend",$("#form_vg_extend").serialize());
+	main_load("disk_vg");
+	$("#pop_vg_extend").dialog("close");
+}
+//缩减存储池
+function vg_reduce_enter(){
+	if(confirm(word['word_disk_vg_del_confirm'])){
+		//alert($("#form_vg_reduce").serialize());
+		$.post("index.php?do=ajax&view=disk_vg&op=vg_reduce",$("#form_vg_reduce").serialize(),function(backinfo){
+			if(backinfo!=0){																								 
+				alert(word['word_disk_reduce_failed']);
+			}
+		});
+		main_load("disk_vg");
+		$("#pop_vg_reduce").dialog("close");
+	}
+}
+
+//创建lun
+function lv_creat(){
+	if($("#vg_list").val()==0){
+		alert(word['word_disk_vg_please']);
+		return false;
+	}
+	if(!$("#lv_name").val()){
+		alert(word['word_disk_lv_name_please']);
+		return false;
+	}
+	if($("#lv_name").val().length<6){
+		alert(word['word_disk_lv_name_6']);
+		return false;
+	}
+	if($("#lv_name").val().match(/[\u4e00-\u9fa5]|(?:^\s+)|(?:\s+$)/)!=null){
+		alert(word['word_disk_lv_name_chinese']);
+		return false;
+	}
+	if(!$("#lv_size").val()){
+		alert(word['word_disk_lv_space_please']);
+		return false;
+	}
+	if($("#lv_unit").val()=="G"&&$("#lv_size").val()<300){
+		alert(word['word_disk_lv_space_300']);
+		return false;
+	}
+	$.post("index.php?do=ajax&view=disk_vg&op=lv_creat",$("#form_lv_creat").serialize(),function(backinfo){
+		if(backinfo!=0){																								 
+			alert(word['word_disk_lv_creat_failed']);
+		}
+	});
+	main_load("disk_vg");
+	$("#pop_lv_creat").dialog("close");
+}
+//删除LUN
+function lv_del(lv_name){
+	if(confirm(word['word_disk_lv_del_confirm'])){
+		var backinfo=$.ajax({url:"index.php?do=ajax&view=disk_vg&op=lv_del&lv_name="+lv_name,async:false});
+		if(backinfo.responseText!=0){
+			alert(word['word_disk_lv_del_failed']);
+		}
+		main_load("disk_vg");
+	}
+}
+//扩展LUN
+function lv_extend_enter(){
+	if(!$("#extend_lv_size").val()){
+		alert(word['word_disk_extend_space_please']);
+		return false;
+	}
+	//alert($("#form_lv_extend").serialize());
+	$.post("index.php?do=ajax&view=disk_vg&op=lv_extend",$("#form_lv_extend").serialize(),function(backinfo){
+		if(backinfo!=0){																								 
+			alert(word['word_disk_extend_failed']);
+		}
+	});
+	main_load("disk_vg");
+	$("#pop_lv_extend").dialog("close");
+}
+//创建文件系统
+function lv_mkfs_enter(){
+	if(confirm(word['word_disk_format_confirm'])){
+		var lv_name=$("#fs_lv_name").html();
+		$.ajax({url:"index.php?do=ajax&view=disk_vg&op=lv_mkfs&lv_name="+lv_name,async:false});
+		main_load("disk_vg");
+		$("#pop_lv_mkfs").dialog("close");
+	}
+}
+//创建映射
+function lv_mount_enter(){
+	if($("#mount_path").val()==0){
+		alert(word['word_disk_mount_path_please']);
+		return false;
+	}
+	var lv_name=$("#mount_lv_name").html();
+	$.post("index.php?do=ajax&view=disk_vg&op=lv_mount&lv_name="+lv_name,$("#form_lv_mount").serialize(),function(backinfo){
+		if(backinfo!=0){																								 
+			alert(word['word_disk_mkfs_failed']);
+		}
+	});
+	main_load("disk_vg");
+	$("#pop_lv_mount").dialog("close");
+}
+//删除映射
+function lv_umount(mount_path){
+	if(confirm(word['word_disk_mount_del_confirm'])){
+		var backinfo=$.ajax({url:"index.php?do=ajax&view=disk_vg&op=lv_umount&mount_path="+mount_path,async:false});
+		if(backinfo.responseText!=0){
+			alert(word['word_disk_lv_del_failed']);
+		}
+		main_load("disk_vg");
+	}
+}
+//点击复选框
+/*function is_auto_delete(auto_delete,sl){
+	if(auto_delete.checked){
+		$("#"+sl).attr("disabled",false);
+	}else{
+		$("#"+sl).attr("disabled",true);
+	}
+}*/
+//录像自动删除
+/*function auto_del(){
+	//alert($("#form_auto_del").serialize());
+	$.post("index.php?do=ajax&view=disk_vg&op=auto_del",$("#form_auto_del").serialize());
+	main_load("disk_vg");
+	$("#pop_auto_del").dialog("close");
+}*/
+</script>
+

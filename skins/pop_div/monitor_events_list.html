@@ -1,0 +1,276 @@
+<!--录像列表-->
+<div>
+  <input type="hidden" name="event_mid" id="event_mid" value="" />
+  <input type="hidden" name="event_mname" id="event_mname" value="" />
+  <input type="hidden" id="eid_str" value="0" /><!--文件id隐藏域-->
+  <form id="form_events">
+    <table border="0" class="pop_table">
+      <thead>
+        <tr>
+          <th width="7%"><a href="javascript:;" onClick="list_sort('event','Id')"><span class="word_id">Id</span></a>&nbsp;<span id="event_Id"></span></th>
+          <th width="32%"><a href="javascript:;" onClick="list_sort('event','Name')"><span class="word_name">名称</span></a>&nbsp;<span id="event_Name"></span></th>
+          <th width="23%"><a href="javascript:;" onClick="list_sort('event','StartTime')"><span class="word_monitor_start_time">开始时间</span></a>&nbsp;<span id="event_StartTime"></span></th>
+          <th width="23%"><a href="javascript:;" onClick="list_sort('event','EndTime')"><span class="word_monitor_end_time">结束时间</span></a>&nbsp;<span id="event_EndTime"></span></th>
+          <th width="10%"><a href="javascript:;" onClick="list_sort('event','State')"><span class="word_state">状态</span></a>&nbsp;<span id="event_State"></span></th>
+          <th width="5%"><input type="checkbox" onclick="check_all(this,'form_events')" /></th>
+        </tr>
+      </thead>
+      <tbody id="event_table"><tr><td colspan="6"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading"></span></td></tr></tbody>
+    </table>
+  </form>
+  <div class="page" id="event_page_banner"></div>
+</div>
+
+<script type="text/javascript">	
+var mid=$("#events_list_mid").val();
+var mname=$("#events_list_mname").val();
+var url=$("#events_list_url").val();
+
+$(document).ready(function(){
+	language();
+	
+	$("#events_list_mid").remove()
+	$("#events_list_mname").remove()
+	$("#events_list_url").remove()
+	
+	$("#event_mid").val(mid);
+	$("#event_mname").val(mname);
+	
+	table_load("event","Id",url,"asc","uncookie");
+	
+	//根据权限判断是否有删除按钮
+	var buttons={};
+	
+	if(word['word_accept']=='确定'){
+		if($("#session_event_del").val()==1&&$("#session_event_download").val()==1){
+			var buttons={
+				"删除全部文件": function() {
+					event_del("del_all");
+				},
+				"删除异常文件": function() {
+					event_del("del_error");
+				},
+				"删除丢失文件": function() {
+					event_del("del_lost");
+				},
+				"删除选中文件": function() {
+					event_del("del_check");
+				},
+				"下载全部文件": function() {
+					event_download("all",mid);
+				},
+				"播放全部文件": function() {
+					event_play(mid,mname,"play_all");
+				},
+				"播放选中文件": function() {
+					event_play(mid,mname,"play_check");
+				}
+			};
+		}else if($("#session_event_del").val()!=1&&$("#session_event_download").val()==1){
+			var buttons={
+				"下载全部文件": function() {
+					event_download("all",mid);
+				},
+				"播放全部文件": function() {
+					event_play(mid,mname,"play_all");
+				},
+				"播放选中文件": function() {
+					event_play(mid,mname,"play_check");
+				}
+			};
+			
+		}else if($("#session_event_del").val()==1&&$("#session_event_download").val()!=1){
+			var buttons={
+				"删除全部文件": function() {
+					event_del("del_all");
+				},
+				"删除异常文件": function() {
+					event_del("del_error");
+				},
+				"删除丢失文件": function() {
+					event_del("del_lost");
+				},
+				"删除选中文件": function() {
+					event_del("del_check");
+				},			
+				"播放全部文件": function() {
+					event_play(mid,mname,"play_all");
+				},
+				"播放选中文件": function() {
+					event_play(mid,mname,"play_check");
+				}
+			};
+		}else{
+			var buttons={
+				"播放全部文件": function() {
+					event_play(mid,mname,"play_all");
+				},
+				"播放选中文件": function() {
+					event_play(mid,mname,"play_check");
+				}
+			};
+		}
+	}else{
+		if($("#session_event_del").val()==1&&$("#session_event_download").val()==1){
+			var buttons={
+				"Delete all": function() {
+					event_del("del_all");
+				},
+				"Delete error": function() {
+					event_del("del_error");
+				},
+				"Delete lost": function() {
+					event_del("del_lost");
+				},
+				"Delete mark": function() {
+					event_del("del_check");
+				},
+				"Download all": function() {
+					event_download("all",mid);
+				},
+				"Play all": function() {
+					event_play(mid,mname,"play_all");
+				},
+				"Play mark": function() {
+					event_play(mid,mname,"play_check");
+				}
+			};
+		}else if($("#session_event_del").val()!=1&&$("#session_event_download").val()==1){
+			var buttons={
+				"Download all": function() {
+					event_download("all",mid);
+				},
+				"Play all": function() {
+					event_play(mid,mname,"play_all");
+				},
+				"Play mark": function() {
+					event_play(mid,mname,"play_check");
+				}
+			};
+			
+		}else if($("#session_event_del").val()==1&&$("#session_event_download").val()!=1){
+			var buttons={
+				"Delete all": function() {
+					event_del("del_all");
+				},
+				"Delete error": function() {
+					event_del("del_error");
+				},
+				"Delete lost": function() {
+					event_del("del_lost");
+				},
+				"Delete mark": function() {
+					event_del("del_check");
+				},			
+				"Play all": function() {
+					event_play(mid,mname,"play_all");
+				},
+				"Play mark": function() {
+					event_play(mid,mname,"play_check");
+				}
+			};
+		}else{
+			var buttons={
+				"Play all": function() {
+					event_play(mid,mname,"play_all");
+				},
+				"Play mark": function() {
+					event_play(mid,mname,"play_check");
+				}
+			};
+		}
+		
+		
+	}
+	
+	pop_buttons(buttons,"monitor_events_list")
+});	
+
+
+//录像删除
+function event_del(op){
+	switch(op){
+		case "del_all":
+		  var conf=word['word_monitor_file_delete_all'];
+		break;
+		
+		case "del_error":
+		  var conf=word['word_monitor_file_delete_error'];
+		break;
+		
+		case "del_lost":
+		  var conf=word['word_monitor_file_delete_lost'];
+		break;
+		
+		case "del_check":
+		  var conf=word['word_monitor_file_delete_selected'];
+		break;
+	}
+	
+	if(op=="del_check"){
+		if(!$("#form_events").serialize()){
+			alert(word['word_monitor_choose']);
+			return false;
+		}
+		if(confirm(conf)){
+			$.post("index.php?do=ajax&view=monitor_list&op=event_del",$("#form_events").serialize());
+		}else{
+			return false;
+		}
+	}else{
+		if(confirm(conf)){
+			$.post("index.php?do=ajax&view=monitor_list&op=event_del","op="+op+"&mid="+$("#event_mid").val());
+		}else{
+			return false;
+		}
+	}
+	setTimeout(event_list_refresh,300);
+}
+
+//录像列表和前端设备列表的刷新
+function event_list_refresh(){
+	table_load("event","Id",url,"asc");
+	if(getCookie("child")=="monitor_list"){
+		main_load("monitor_list");
+	}
+}
+
+//录像下载
+function event_download(path,mid){
+	window.location.replace('index.php?do=ajax&view=monitor_list&op=event_download&path='+path+'&mid='+mid);
+}
+
+//单监视器按文件播放
+function event_play(mid,mname,op,eid){
+	switch(op){
+		//播放一个文件
+		case "play_one":
+		  var eid_str=eid;
+		break;
+		
+		//播放选中的文件
+		case "play_check":
+		  if(!$("#form_events").serialize()){
+			  alert(word['word_monitor_choose']);
+			  return false;
+		  }
+		  //获取eid_str
+		  var eid_arr=new Array();
+		  var form_events=document.getElementById('form_events');
+		  for(var i=0;i<form_events.edit_arr.length;i++){
+			  if(form_events.edit_arr[i].checked){
+				  eid_arr.push(form_events.edit_arr[i].value);
+			  }
+		  }
+		  var eid_str=eid_arr.join(",");
+		break;
+		
+		//播放全部文件
+		case "play_all":
+		  //var eid_str=0;
+		break;
+	}
+	$("#eid_str").val(eid_str);//置入隐藏域
+	monitor_pop("event",1,mid,mname);
+}
+</script>

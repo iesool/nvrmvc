@@ -1,0 +1,42 @@
+<div style="overflow-y:scroll; height:400px; width:730px;">
+  <!--内容-->
+  <!--<div id="time_date" style="margin-bottom:10px"></div>-->
+  <table border="0" class="main_table">
+    <thead>
+      <tr>
+        <th width="40%"><a href="javascript:;"><span class="word_system_backup_time">备份时间</span></a>&nbsp;<span id="file_Time"></span></th>
+        <th width="60%"><a href="javascript:;"><span class="word_system_backup_file_name">文件名称</span></a>&nbsp;<span id="file_Name"></span></th>
+      </tr>
+    </thead>
+    <tbody id="file_table"><tr><td colspan="2"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中，请稍候...</span></td></tr></tbody>
+  </table>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();					   
+	/*$.getJSON("index.php?do=ajax&view=system_log&op=get_time_date",function(time_date){
+		var str='上次备份时间：';
+		if(time_date['Time']){
+			str+=time_date['Time'];
+		}else{
+			str+="暂无";
+		}
+		str+='&nbsp;&nbsp;&nbsp;&nbsp;上次备份删除时间：';
+		if(time_date['Date']){
+			str+=time_date['Date'];
+		}else{
+			str+="暂无";
+		}
+		$("#time_date").html(str);				  
+	});*/					   
+						   
+	get_table("file","index.php?do=ajax&view=system_log&op=get_log_file",word['word_none']);						   
+});
+
+function log_file_download(path){
+	//alert(path.replace("/var/www/zm/",""));
+	//window.location=path.replace("/var/www/zm/","");
+	window.location="index.php?do=ajax&view=system_log&op=download_log_file&path="+path;
+}
+</script>

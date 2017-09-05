@@ -1,0 +1,76 @@
+<form>
+  <span class="word_monitor_plan_select_please">请选择一个计划</span>：	
+  <select id="plan_list"></select>
+  <a href="javascript:;" onClick="$('#main').append('<input type=hidden id=edit_setting value=system_plan />');pop_div(800,600,word['word_setting'],'setting');" class="plan_setting"><span class="word_setting">设置</span></a>
+</form>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	get_plan();
+	
+	if(word['word_online']=='登录为'){
+		pop_buttons({
+			"确定":function(){
+				set_plan();
+			},
+			"取消":function(){
+				pop_close("monitor_plan");
+			}
+		},"monitor_plan");
+	}else{
+		pop_buttons({
+			"Accept":function(){
+				set_plan();
+			},
+			"Cancel":function(){
+				pop_close("monitor_plan");
+			}
+		},"monitor_plan");
+	}
+	
+});
+
+function get_plan(){
+	$.getJSON("index.php?do=ajax&view=monitor_list&op=get_plan",function(plan){
+		var plan_options="<option value=0>"+word['word_none']+"</option>";
+		for(i in plan){
+			//plan_options+="<option value="+plan[i]+">"+word['word_plan']+plan[i]+"</option>"
+			plan_options+="<option value="+plan[i]['id']+">"+plan[i]['name']+"</option>"
+		}
+		$("#plan_list").html(plan_options);
+	});
+}
+
+function set_plan(){
+	//获取mid_str
+	
+	var mid_arr=new Array();
+	if(document.getElementById("main_iframe")){
+		var zTree = $.fn.zTree.getZTreeObj("fee_tree");
+		var checked_nodes = zTree.getCheckedNodes(true);
+		for(i in checked_nodes){
+			if(checked_nodes[i].mid){
+				mid_arr.push(checked_nodes[i].mid);
+			}
+		}
+	}else{
+		var form_edit=document.getElementById('form_edit');
+		for(var i=0;i<form_edit.edit_arr.length;i++){
+			if(form_edit.edit_arr[i].checked){
+				mid_arr.push(form_edit.edit_arr[i].value);
+			}
+		}
+	}
+	var mid_str=mid_arr.join(",");	
+	//$.ajax({url:"index.php?do=ajax&view=monitor_list&op=set_plan&plan="+$("#plan_list").val()+"&mid_str="+mid_str,async:false});
+	$.post("index.php?do=ajax&view=monitor_list&op=monitor_control&control=5","&plan="+$("#plan_list").val()+"&mid_str="+mid_str);
+	if(document.getElementById("main_iframe")){
+		get_monitor_tree();
+	}else{
+		main_load('monitor_list');
+	}
+	pop_close("monitor_plan");
+}
+</script>

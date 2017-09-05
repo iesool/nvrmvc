@@ -1,0 +1,208 @@
+<!--过滤器-->
+<div>
+  <table border="0" cellpadding="5" width="100%">
+    <tr>
+      <td><strong><span class="word_system_timepart">时间段</span></strong></td>
+      <td colspan="7">
+        <input class="Wdate" type="text" onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="" id="log_start_time" size="25">
+        <input class="Wdate" type="text" onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="" id="log_end_time" size="25">
+        <!--<input type="button" value="确定" onClick="log_filter('time',$('#log_start_time').val()+'all'+$('#log_end_time').val())" />-->
+        <button onClick="log_filter('time',$('#log_start_time').val()+'all'+$('#log_end_time').val())"><span class="word_accept">确定</span></button>
+      </td>
+    </tr>
+    
+    <tr>
+      <td><strong><span class="word_system_level">级别</span></strong></td>
+      <td><a href="javascript:;" onClick="log_filter('level','all')" id="log_level_all" class="log_level" style="background:#CCC"><span class="word_all">全部</span></a></td>
+      <td><img src="../images/diskinuse.png" width=15 height=15 />&nbsp;<a href="javascript:;" onClick="log_filter('level','normal')" id="log_level_normal" class="log_level"><span class="word_system_normal">正常</span></a></td>
+      <td><img src="../images/diskinactive.png" width=15 height=15 />&nbsp;<a href="javascript:;" onClick="log_filter('level','warn')" id="log_level_warn" class="log_level"><span class="word_system_warn">警告</span></a></td>
+      <td><img src="../images/diskdead.png" width=15 height=15 />&nbsp;<a href="javascript:;" onClick="log_filter('level','error')" id="log_level_error" class="log_level"><span class="word_system_error">错误</span></a></td>
+      <td colspan="3">&nbsp;</td>
+    </tr>
+    
+    <tr>
+      <td width="100px"><strong><span class="word_system_class">类型</span></strong></td>
+      <td width="60px"><a href="javascript:;" onClick="log_filter('class','all')" id="log_class_all" class="log_class" style="background:#CCC"><span class="word_all">全部</span></a></td>
+      <td width="60px"><a href="javascript:;" onClick="log_filter('class','monitor')" id="log_class_monitor" class="log_class"><span class="word_fee">前端设备</span></a></td>
+      <td width="60px"><a href="javascript:;" onClick="log_filter('class','net')" id="log_class_net" class="log_class"><span class="word_net">网络</span></a></td>
+      <td width="60px"><a href="javascript:;" onClick="log_filter('class','disk')" id="log_class_disk" class="log_class"><span class="word_disk">磁盘</span></a></td>
+      <td width="60px"><a href="javascript:;" onClick="log_filter('class','system')" id="log_class_system" class="log_class"><span class="word_system">系统</span></a></td>
+      <td width="60px"><a href="javascript:;" onClick="log_filter('class','user')" id="log_class_user" class="log_class"><span class="word_user">用户</span></a></td>
+      <td>&nbsp;</td>
+    </tr>
+    
+    <tr class="more">
+      <td><strong><span class="word_system_type">性质</span></strong></td>
+      <td><a href="javascript:;" onClick="log_filter('type','all')" id="log_type_all" class="log_type" style="background:#CCC"><span class="word_all">全部</span></a></td>
+      <td><a href="javascript:;" onClick="log_filter('type','op')" id="log_type_op" class="log_type"><span class="word_operation">操作</span></a></td>
+      <td><a href="javascript:;" onClick="log_filter('type','run')" id="log_type_run" class="log_type"><span class="word_running">运行</span></a></td>
+      <td colspan="5">&nbsp;</td>
+    </tr>
+    
+    <tr class="more"> 
+      <td><strong><span class="word_user">用户</span></strong></td>
+      <td colspan="7">
+        <select onChange="log_filter('user',encodeURI(this.value))" id="log_users"></select>
+      </td>
+    </tr>
+    
+    <tr class="more">
+      <td><strong>IP</strong></td>
+      <td colspan="7">
+        <select onChange="log_filter('ip',encodeURI(this.value))" id="log_ips"></select>
+      </td>
+    </tr>
+    
+    <tr class="more">
+      <td><strong><span class="word_system_event_keyword">事件关键字</span></strong></td>
+      <td colspan="7">
+        <input type="text" value="" id="keyword">
+        <!--<input type="button" value="确定" class="" onClick="log_filter('keyword',encodeURI($('#keyword').val()))" />-->
+        <button onClick="log_filter('keyword',encodeURI($('#keyword').val()))"><span class="word_accept">确定</span></button>
+      </td>
+    </tr>
+    
+    <tr>
+      <td colspan="10" style="background: url(../images/ui-bg_glass_40_111111_1x400.png) repeat-x scroll 50% 50% transparent; text-align:center" onClick="$('.more').toggle()">
+        <!--ui-bg_diagonals-thick_8_333333_40x40.png-->
+        <!--<a href="javascript:;" onClick="$('.more').toggle()" style="color:#FFF"><strong>更多选项</strong></a>-->
+        <span style="color:#FFF; font-weight:bold" class="word_system_more">更多选项</span>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div>
+  <!--内容-->
+  <table border="0" class="main_table">
+    <thead>
+      <tr>
+        <th width="22%"><a href="javascript:;" onClick="list_sort('log','Time')"><span class="word_time">时间</span></a>&nbsp;<span id="log_Time"></span></th>
+        <th width="7%"><a href="javascript:;" onClick="list_sort('log','Level')"><span class="word_system_level">级别</span></a>&nbsp;<span id="log_Level"></span></th>
+        <th width="9%"><a href="javascript:;" onClick="list_sort('log','Class')"><span class="word_system_class">类型</a></span>&nbsp;<span id="log_Class"></span></th>
+        <th width="7%"><a href="javascript:;" onClick="list_sort('log','Type')"><span class="word_system_type">性质</span></a>&nbsp;<span id="log_Type"></span></th>
+        <th width="7%"><a href="javascript:;" onClick="list_sort('log','User')"><span class="word_user">用户</span></a>&nbsp;<span id="log_User"></span></th>
+        <th width="10%"><a href="javascript:;" onClick="list_sort('log','Ip')">IP</a>&nbsp;<span id="log_Ip"></span></th>
+        <th width="38%"><a href="javascript:;" onClick="list_sort('log','Event')"><span class="word_system_event">事件</span>&nbsp;<span id="log_Event"></span></th>
+      </tr>
+    </thead>
+    <tbody id="log_table"><tr><td colspan="7"><img src='../images/ajax-loader.gif' />&nbsp;载入中，请稍候...</td></tr></tbody>
+  </table>
+  <div id="log_page_banner" class="page"></div>
+</div>
+
+<!--操作-->
+<div class="main_op">
+  <button id="log_download" onClick="log_download()"><span class="word_download">下载</span></button>
+  <button id="log_del" onClick="log_del()"><span class="word_delete">删除</span></button>
+</div>
+
+<!--下载弹出层-->
+<div id="pop_log_download" title="下载日志" style="display:none">
+  <table border="0" width="100%" cellpadding="10" style="text-align:center">
+    <tr>
+      <td><a href="javascript:;" id="download_log"><span class="word_system_text_file">文本文件</span></a></td>
+      <td><a href="javascript:;" id="download_xls" onClick="excel()"><span class="word_system_excel_file">EXCEL文件</span></a></td>
+    </tr>
+  </table>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	$("button").button();
+	$(".more").hide();
+	
+	if(word['word_online']=="登录为"){
+		$('#pop_log_download').dialog({
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			title:word['word_system_download_log'],
+			width:300,
+			height:150,
+			buttons:{
+				"取消":function(){
+					$(this).dialog("close");
+				}
+			}
+		});
+	}else{
+		$('#pop_log_download').dialog({
+			modal: true,
+			autoOpen:false,
+			resizable:false,
+			title:word['word_system_download_log'],
+			width:300,
+			height:150,
+			buttons:{
+				"Cancel":function(){
+					$(this).dialog("close");
+				}
+			}
+		});
+	}
+		
+	
+	//本页面权限控制
+	setTimeout(log_right,0);
+	
+	//获取用户
+	$.getJSON("index.php?do=ajax&view=system_log&op=get_user_list",function(users_arrs){
+		var users_options="<option value='all'>"+word['word_all']+"</option>";
+		for(i in users_arrs){
+			users_options+="<option value='"+users_arrs[i]['User']+"'>"+users_arrs[i]['User']+"</option>"
+		}
+		$("#log_users").html(users_options);
+	});
+	
+	//获取IP
+	$.getJSON("index.php?do=ajax&view=system_log&op=get_ip_list",function(ips_arrs){
+		var ips_options="<option value='all'>"+word['word_all']+"</option>";
+		for(i in ips_arrs){
+			ips_options+="<option value='"+ips_arrs[i]['Ip']+"'>"+ips_arrs[i]['Ip']+"</option>"
+		}
+		$("#log_ips").html(ips_options);
+	});
+	
+	//获取日志
+	table_load("log","Time","index.php?do=ajax&view=system_log&op=get_log_list","asc");
+});
+
+//本页面权限控制
+function log_right(){
+	if($("#session_log").val()!=1){
+		$("#log_download").hide();
+		$("#log_del").hide();
+	}
+}
+
+//日志过滤
+function log_filter(key,val){
+	filter("log",key,val,"asc");
+}
+
+
+//日志下载
+function log_download(){
+	$("#download_log").attr("href",$("#log_url").val().replace("op=get_log_list","op=log_download&download_class=log"));
+	//$("#download_xls").attr("href",$("#log_url").val().replace("op=get_log_list","op=log_download&download_class=xls"));
+	$('#pop_log_download').dialog('open');
+}
+function excel(){
+	var xls=$.ajax({url:$("#log_url").val().replace("op=get_log_list","op=log_download&download_class=xls"),async:false});
+	$("#download_xls").attr("href",xls.responseText);
+	//$("#download_xls").click();
+}
+
+//日志删除
+function log_del(){
+	if(confirm(word['word_system_log_delete_confirm'])){
+		$.ajax({url:$("#log_url").val().replace("op=get_log_list","op=log_del"),async:false});
+		//main_load("system_log");
+		tab_load("system_log_db");
+	}
+}
+
+</script>

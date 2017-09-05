@@ -1,0 +1,448 @@
+<form>
+  <table border="0" cellpadding="3" width="100%">
+  	<tr>
+      <td width="25%"><span class="word_type">类型</span><input type="hidden" id="muti_type" value="" /></td>
+      <td>
+        <span class="word_monitor_watch">实时</span>&nbsp;<input type="radio" name="muti_type" id="watch_muti" onClick="muti_type_select('watch')" />&nbsp;
+        <span class="word_monitor_event">录像</span>&nbsp;<input type="radio" name="muti_type" id="event_muti" onClick="muti_type_select('event')" />
+      </td>
+    </tr>
+    
+    <tr>
+      <td><span class="word_monitor_way">路数</span></td>
+      <td>
+        <select name="muti" id="muti">
+          <option value="1" id="muti_1">1*1</option>
+          <option value="2" id="muti_2">2*2</option>
+          <option value="3" id="muti_3">3*3</option>
+          <option value="4" id="muti_4">4*4</option>
+          <option value="5" id="muti_5">5*5</option>
+        </select>
+      </td>
+    </tr>
+ 
+    <tr>
+      <td><span class="word_monitor_width_fix">宽度修正</span></td>
+      <td><input type="text" maxlength="5" size="5" name="width_fix" id="width_fix" value="0" /></td>
+    </tr>
+    
+    <tr>
+      <td><span class="word_monitor_height_fix">高度修正</span></td>
+      <td><input type="text" maxlength="5" size="5" name="height_fix" id="height_fix" value="0" /></td>
+    </tr>
+    
+    <tr>
+      <td><span class="word_monitor_hide_bar">状态栏</span></td>
+      <td><input type="checkbox" name="hide_bar" id="hide_bar" value="1" checked /></td>
+    </tr>
+    
+    <tr>
+      <td class="wheel_turn"><span class="word_monitor_turn">轮巡</span></td>
+      <td><input type="checkbox" name="turn" id="turn" value="1" /></td>
+    </tr>
+    <tr>
+      <td class="wheel_turn"><span class="word_monitor_turn_time">轮巡间隔</span><input type="hidden" name="turn_time" id="turn_time" value="" /></td>
+      <td>
+        <select name="minute" id="minute" disabled></select>&nbsp;<span class="word_minute">分钟</span>&nbsp;
+        <select name="second" id="second" disabled></select>&nbsp;<span class="word_second">秒</span>
+      </td>
+    </tr>
+    
+    <tr>
+      <td class="time_part" style="color:#ccc"><span class="word_monitor_start_time">开始时间</span></td>
+      <td><input class="Wdate" type="text" onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="" id="start_time" size="22" disabled></td>
+    </tr>
+    <tr>
+      <td class="time_part" style="color:#ccc"><span class="word_monitor_end_time">结束时间</span></td>
+      <td><input class="Wdate" type="text" onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="" id="end_time" size="22" disabled></td>
+    </tr>
+    
+    <tr>
+      <td><span class="word_monitor_keyboard">键盘控制</span></td>
+      <td><a href="javascript:;" onClick="help_image()"><span class="word_monitor_help_image">查看说明图</span></a></td>
+    </tr>
+  </table>
+</form>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	//权限
+	if($("#session_watch").val()==1&&$("#session_event").val()!=1){
+		$("#watch_muti").attr("checked",true);
+		muti_type_select("watch");
+		$("#event_muti").attr("disabled",true);
+	}else if($("#session_watch").val()!=1&&$("#session_event").val()==1){
+		$("#event_muti").attr("checked",true);
+		muti_type_select("event");
+		$("#watch_muti").attr("disabled",true);
+	}else if($("#session_watch").val()!=1&&$("#session_event").val()!=1){
+		$("#event_muti").attr("disabled",true);
+		$("#watch_muti").attr("disabled",true);
+	}else{
+		if(getCookie("muti_type")=="event"){
+			$("#event_muti").attr("checked",true);
+			muti_type_select("event");
+		}else{
+			$("#watch_muti").attr("checked",true);
+			muti_type_select("watch");
+		}
+	}
+	
+	//获取cookie
+	$("#muti_"+getCookie("muti")).attr("selected",true);
+	
+	if(getCookie("width_fix")){
+		$("#width_fix").val(getCookie("width_fix"));
+	}
+	if(getCookie("height_fix")){
+		$("#height_fix").val(getCookie("height_fix"));
+	}
+	
+	if(getCookie("hide_bar")==1){
+		$("#hide_bar").attr("checked",false);
+	}else{
+		$("#hide_bar").attr("checked",true);
+	}
+		
+	//获取时间
+	var minute=document.getElementById('minute');
+	var second=document.getElementById('second');
+	minute.options.length=0;
+	second.options.length=0;
+	for(var i=0;i<=10;i++){
+		minute.options[minute.length]=new Option(i,i);
+		if(i==getCookie("minute")){
+			minute.options[i].selected=true;
+		}
+	}
+	for(var i=0;i<60;i++){
+		second.options[second.length]=new Option(i,i);
+		if(i==getCookie("second")){
+			second.options[i].selected=true;
+		}
+		second.options[i].id="second_"+i;
+	}
+	if($("#minute").val()==0){
+		var min_turn=get_min_turn();//获得最小轮巡时间
+		for(var i=0;i<min_turn;i++){
+			$("#second_"+i).remove();
+		}
+	}
+	$("#minute").change(function(){
+		var minute=document.getElementById('minute');
+		var second=document.getElementById('second');
+		second.options.length=0;
+		if(parseInt(minute.value)>0){
+			if(parseInt(minute.value)==10){
+				second.options[second.length]=new Option(0,0);
+			}else{
+				for(var i=0;i<60;i++){
+					second.options[second.length]=new Option(i,i);
+				}
+			}
+		}else{
+			var muti=parseInt($("#muti").val());
+			var min_turn=get_min_turn(muti);//获得最小轮巡时间
+			for(var i=min_turn;i<60;i++){
+				second.options[second.length]=new Option(i,i);
+			}
+		}
+	});
+	$("#muti").change(function(){
+		var minute=document.getElementById('minute');
+		var second=document.getElementById('second');
+		second.options.length=0;
+		if(parseInt(minute.value)>0){
+			if(parseInt(minute.value)==10){
+				second.options[second.length]=new Option(0,0);
+			}else{
+				for(var i=0;i<60;i++){
+					second.options[second.length]=new Option(i,i);
+				}
+			}
+		}else{
+			var muti=parseInt($(this).val());
+			var min_turn=get_min_turn(muti);//获得最小轮巡时间
+			for(var i=min_turn;i<60;i++){
+				second.options[second.length]=new Option(i,i);
+			}
+		}
+								 
+	});							 
+	
+	//是否轮巡
+	$("#turn").click(function(){
+		if($("#turn").attr("checked")){
+			$("#minute").attr("disabled",false);
+			$("#second").attr("disabled",false);
+		}else{
+			$("#minute").attr("disabled",true);
+			$("#second").attr("disabled",true);
+		}
+	});
+	
+	
+	if(word['word_online']=="登录为"){
+		//按钮
+		pop_buttons({
+			"确定":function(){
+				monitor_muti();
+			},
+			"取消":function(){
+				pop_close("monitor_muti");
+			}
+		},"monitor_muti");
+	}else{
+		//按钮
+		pop_buttons({
+			"Accept":function(){
+				monitor_muti();
+			},
+			"Cancel":function(){
+				pop_close("monitor_muti");
+			}
+		},"monitor_muti");
+		
+	}
+});
+
+//获得最小轮巡时间
+function get_min_turn(muti){
+	if(!muti){
+		if(getCookie("muti")){
+			muti=parseInt(getCookie("muti"));
+		}else{
+			muti=1;
+		}
+	}
+	
+	var min_turn;
+	switch(muti){
+		case 1:
+		  min_turn=10;
+		break;
+		
+		case 2:
+		  min_turn=20;
+		break;
+		
+		case 3:
+		  min_turn=30;
+		break;
+		
+		case 4:
+		  min_turn=40;
+		break;
+		
+		case 5:
+		  min_turn=50;
+		break;
+		
+		default:
+		  min_turn=50;
+		break;
+	}
+	
+	return min_turn;
+}
+
+//实时录像类型选择
+function muti_type_select(muti_type){
+	$("#muti_type").val(muti_type);
+	switch(muti_type){
+		case "watch":
+		  $(".wheel_turn").css("color","#000");//字颜色变化
+		  $(".time_part").css("color","#ccc");
+		  
+		  if(getCookie("turn")==1){
+			  $("#turn").attr("checked",true);
+			  $("#minute").attr("disabled",false);
+			  $("#second").attr("disabled",false);
+		  }else{
+			  $("#turn").attr("disabled",false);//解除轮巡选项
+			  
+			  $("#start_time").attr("disabled",true);//禁用时间
+			  $("#end_time").attr("disabled",true);
+		  }
+		break;
+		
+		case "event":
+		  $(".wheel_turn").css("color","#ccc");
+		  $(".time_part").css("color","#000");
+		  
+		  $("#turn").attr("checked",false);//禁用轮巡选项
+		  $("#turn").attr("disabled",true);
+		  $("#minute").attr("disabled",true);
+		  $("#second").attr("disabled",true);
+		  
+		  $("#start_time").attr("disabled",false);//解除时间
+		  $("#end_time").attr("disabled",false);
+		  
+		  $("#start_time").val(getCookie("start_time"));
+		  $("#end_time").val(getCookie("end_time"));
+		break;
+		
+		default:
+		break;
+	}
+}
+
+//多路确定
+function monitor_muti(){
+	var turn_time=(parseInt($("#minute").val())*60+parseInt($("#second").val()))*1000;
+	$("#turn_time").val(turn_time);
+	
+	//获取mid_str
+	var mid_arr=new Array();
+	if(document.getElementById("main_iframe")){
+		var zTree = $.fn.zTree.getZTreeObj("fee_tree");
+		var checked_nodes = zTree.getCheckedNodes(true);
+		for(i in checked_nodes){
+			if(checked_nodes[i].mid){
+				mid_arr.push(checked_nodes[i].mid);
+			}
+		}
+	}else{
+		$("#form_edit #edit_arr").each(function(){
+			if($(this).attr('checked')){
+				mid_arr.push($(this).val());
+			}
+		});
+	}
+	var mid_str=mid_arr.join(",");
+	
+	//设置cookie
+	setCookie("muti_type",$("#muti_type").val(),30);
+	setCookie("muti",$("#muti").val(),30);
+	
+	if(!$("#width_fix").val()){
+		$("#width_fix").val(0);
+		setCookie("width_fix",$("#width_fix").val(),-30);
+	}else{
+		if(isNaN($("#width_fix").val())){
+			alert("请填写数字！");
+			return false;
+		}else{
+			setCookie("width_fix",$("#width_fix").val(),30);
+		}
+	}
+	if(!$("#height_fix").val()){
+		$("#height_fix").val(0);
+		setCookie("height_fix",$("#height_fix").val(),-30);
+	}else{
+		if(isNaN($("#height_fix").val())){
+			alert("请填写数字！");
+			return false;
+		}else{
+			setCookie("height_fix",$("#height_fix").val(),30);
+		}
+	}
+	
+	if(!$("#hide_bar").attr("checked")){
+		setCookie("hide_bar",1,30);
+	}else{
+		setCookie("hide_bar",1,-30);
+	}
+	if($("#turn").attr("checked")){
+		setCookie("turn",1,30);
+	}else{
+		setCookie("turn",1,-30);
+	}
+	setCookie("minute",$("#minute").val(),30);
+	setCookie("second",$("#second").val(),30);
+	setCookie("start_time",$("#start_time").val(),30);
+	setCookie("end_time",$("#end_time").val(),30);
+	
+	//验证类型
+	if(!$("#muti_type").val()){
+		return false;
+	}
+	
+	//验证用户选择是否符合多路条件
+	if(!$("#turn").attr("checked")||$("#muti_type").val()=="event"){
+		switch(parseInt($("#muti").val())){
+			case 1:
+				if(mid_arr.length>1){
+					alert(word['word_monitor_turn_1']);
+					return false;
+				}
+			break;
+			
+			case 2:
+				if(mid_arr.length>4){
+					alert(word['word_monitor_turn_2']);
+					return false;
+				}
+			break;
+			
+			case 3:
+				if(mid_arr.length>9){
+					alert(word['word_monitor_turn_3']);
+					return false;
+				}
+			break;
+			
+			case 4:
+				if(mid_arr.length>16){
+					alert(word['word_monitor_turn_4']);
+					return false;
+				}
+			break;
+			
+			case 5:
+				if(mid_arr.length>25){
+					alert(word['word_monitor_turn_5']);
+					return false;
+				}
+			break;
+		}
+	}
+	
+	if($("#start_time").val()&&$("#end_time").val()){
+		//验证开始结束时间
+		var start_arr=$("#start_time").val().split(" ");
+		var start_date=start_arr[0].split("-");
+		var start_time=start_arr[1].split(":");
+		var start_utc=Date.UTC(start_date[0],start_date[1],start_date[2],start_time[0],start_time[1],start_time[2]);
+		
+		var end_arr=$("#end_time").val().split(" ");
+		var end_date=end_arr[0].split("-");
+		var end_time=end_arr[1].split(":");
+		var end_utc=Date.UTC(end_date[0],end_date[1],end_date[2],end_time[0],end_time[1],end_time[2]);
+		
+		if(start_utc>=end_utc){
+			alert(word['word_system_end_start_day']);
+			return false;
+		}
+	}
+	
+	//弹出实时窗口
+	monitor_pop($("#muti_type").val(),$("#muti").val(),mid_str,word['word_monitor_'+$("#muti_type").val()]);
+}
+
+//弹出窗口改变修正值
+function opener_fix(width_fix,height_fix){
+	$("#width_fix").val(width_fix);
+	$("#height_fix").val(height_fix);
+}
+
+//弹出窗口改变状态栏
+function opener_bar(hide_bar){
+	if(hide_bar==1){
+		$("#hide_bar").attr("checked",false);
+	}else{
+		$("#hide_bar").attr("checked",true);
+	}
+}
+
+//键盘说明图片
+function help_image(){
+	/*if(document.getElementById('main_iframe')){
+		iframe_toggle('stop');
+	}*/
+	pop_div(870,650,word['word_monitor_help_image'],'help_image');
+}
+</script>
+

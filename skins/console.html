@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link type="text/css" rel="stylesheet" href="../css/console.css" />
+<link type="text/css" rel="stylesheet" href="../css/disk.css" />
+<link type="text/css" rel="stylesheet" href="../css/jquery-ui-1.8.17.custom.css" />	
+
+<script type="text/javascript" src="/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.17.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.form.js"></script>
+<script type="text/javascript" src="/js/jquery.bgiframe.min.js"></script>
+
+<script>
+var word=$.ajax({url:"index.php?do=ajax&view=console&op=get_language",async:false});
+word=word.responseText;
+word=eval("("+word+")");
+
+function language(){
+	for(i in word){
+		$("."+i).html(word[i]);
+	}	
+}
+</script>
+
+<script type="text/javascript" src="../js/functions.js"></script>
+<script type="text/javascript" src="../js/my_table.js"></script>
+<title>NVR</title>
+</head>
+
+<body>
+  <!--显示头部LOGO图片-->
+  <div class="header"></div>
+  <!--状态栏-->
+  <div class="banner">
+    <table border="0">
+      <tr>
+        <td style="text-align:left"><span id="datetime"></span></td><!--服务器时间和日期-->
+        <td>
+          <span class="word_online">登录为</span>&nbsp;
+          <span id="username" style="color:#00B6EF"></span>&nbsp;
+          <a href="javascript:;" onClick="user_logout()"><span class="word_exit">退出</span></a>
+          <!--权限隐藏域-->
+          <input type="hidden" id="session_uid" value="" />
+          <input type="hidden" id="session_watch" value="" />
+          <input type="hidden" id="session_event" value="" />
+          <input type="hidden" id="session_ptz" value="" />
+          <input type="hidden" id="session_group" value="" />
+          <input type="hidden" id="session_monitor_modify" value="" />
+          <input type="hidden" id="session_monitor_control" value="" />
+          <input type="hidden" id="session_event_del" value="" />
+          <input type="hidden" id="session_event_download" value="" />
+          <input type="hidden" id="session_log" value="" />
+          <input type="hidden" id="session_plan" value="" />
+        </td>
+        <td>
+          <span class="word_version">版本号</span>&nbsp;
+          <span id="version"></span>&nbsp;
+          <a href="javascript:;" onClick="main_default()"><span class="word_detail">详细</span></a>
+        </td>
+        <!--<td><a href="javascript:;" onClick="pop_div(600,400,word['word_cms'],'machines')"><span class="word_cms">集中管理</span></a></td>-->
+        <!--<td><a href="javascript:;" onClick="pop_div(800,600,word['word_help'],'help')"><span class="word_help">帮助说明</span></a></td>-->
+        <td>
+          <span class="word_state">状态</span>&nbsp;
+          <span id="state"></span>
+        </td>
+      </tr>
+    </table>
+  </div>
+  
+  <!--左侧-->
+  <div class="left">
+    <div id="accordion">
+      <div>
+        <h3><a href="#" onClick="main_show(0,'monitor_list')" id="monitor_manage"><span class="word_monitor_manage">前端设备管理</span></a></h3>
+        <ul>
+          <li><a href="javascript:;" onClick="main_show(0,'monitor_list')" id="monitor_list" class="left_a"><span class="word_monitor_list">前端设备列表</span></a></li>
+          <li id="group_li"><a href="javascript:;" onClick="main_show(0,'monitor_group')" id="monitor_group" class="left_a"><span class="word_monitor_group">所属组管理</span></a></li>
+          <!--<li id="watch_li"><a href="javascript:;" onClick="main_show(0,'monitor_watch')" id="monitor_watch" class="left_a"><span class="word_monitor_watch">实时视频查看</span></a></li>
+          <li id="events_li"><a href="javascript:;" onClick="main_show(0,'monitor_events')" id="monitor_events" class="left_a"><span class="word_monitor_events">录像查看下载</span></a></li>-->
+        </ul>
+      </div>
+      <div id="net_header">
+        <h3><a href="#" onClick="main_show(1,'net_list')" id="net_manage"><span class="word_net_manage">网络管理</span></a></h3>
+        <ul>
+          <li><a href="javascript:;" onClick="main_show(1,'net_list')" id="net_list" class="left_a"><span class="word_net_list">网卡设置</span></a></li>
+          <li><a href="javascript:;" onClick="main_show(1,'net_dns')" id="net_dns" class="left_a"><span class="word_net_dns">DNS设置</span></a></li>
+        </ul>
+      </div>
+      <div id="disk_header">
+        <h3><a href="#" onClick="main_show(2,'disk_raid')" id="disk_manage"><span class="word_disk_manage">磁盘管理</span></a></h3>
+        <ul>
+          <li><a href="javascript:;" onClick="main_show(2,'disk_raid')" id="disk_raid" class="left_a"><span class="word_disk_raid">RAID管理</span></a></li>
+          <li><a href="javascript:;" onClick="main_show(2,'disk_vg')" id="disk_vg" class="left_a"><span class="word_disk_vg">存储池管理</span></a></li>
+        </ul>
+      </div>
+      <div id="system_header">
+        <h3><a href="#" onClick="main_show(3,'system_log')" id="system_manage"><span class="word_system_manage">系统管理</span></a></h3>
+        <ul>
+          <li id="log_li"><a href="javascript:;" onClick="main_show(3,'system_log')" id="system_log" class="left_a"><span class="word_system_log">系统日志</span></a></li>
+          <li id="set_li"><a href="javascript:;" onClick="main_show(3,'system_set')" id="system_set" class="left_a"><span class="word_system_set">系统设置</span></a></li>
+          <li id="op_li"><a href="javascript:;" onClick="main_show(3,'system_operation')" id="system_operation" class="left_a"><span class="word_system_operation">系统操作</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h3><a href="#" onClick="main_show(4,'user_list')" id="user_manage"><span class="word_user_manage">用户管理</span></a></h3>
+        <ul>
+          <li><a href="javascript:;" onClick="main_show(4,'user_list')" id="user_list" class="left_a"><span class="word_user_list">用户列表</span></a></li>
+          <li><a href="javascript:;" onClick="user_logout()" id="user_logout"><span class="word_user_logout">用户退出</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!--主内容-->
+  <div id="main" class="main"></div>
+  
+  <!--底部-->
+  <div style="clear:both"></div>
+  <div class="footer"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+var t;
+$(document).ready(function(){
+	//初始化语言
+	language();
+	
+	//权限初始化
+	right_init()
+	
+	//左侧折叠菜单(jquery ui)
+	$("#accordion").accordion({ header: "h3",active: false });
+		
+	//获得主内容
+	main_get();
+});
+
+
+//获取bunne信息
+window.setInterval(get_banner_state,1000);
+function get_banner_state(){
+	$.getJSON("../index.php?do=ajax&view=console&op=get_banner_state",function(banner_state){
+		$("#datetime").html(banner_state.datetime);//获取服务器时间														
+		//$("#sysdisk").html(banner_state.sysdisk);//系统盘占用率														
+		//$("#username").html(banner_state.username);//用户名
+		$("#version").html(banner_state.version);//版本
+		if(banner_state.state==1){
+			$("#state").html("<font color=green>"+word['word_running']+"</font>");//运行状态
+		}else{
+			$("#state").html("<font color=red>"+word['word_closed']+"</font>");//运行状态
+		}
+		$("#sn").html(banner_state.sn);
+		$("#mdl").html(banner_state.module);
+		$("#welcome").html(banner_state.welcome_word);
+		$(".footer").html(banner_state.footer_word);
+	});
+}
+
+//权限初始化
+function right_init(){
+	//获得session中的用户信息，进行权限操作
+	$.getJSON("index.php?do=ajax&view=console&op=get_user",function(user){
+		//banner
+		$("#username").html(user['Username']);
+																	
+		//其他页面根据这些隐藏域的值进行权限判断
+		$("#session_uid").val(user['Id']);
+		$("#session_watch").val(user['Watch_right']);
+		$("#session_event").val(user['Event_right']);
+		$("#session_ptz").val(user['Ptz_right']);
+		$("#session_group").val(user['Group_right']);
+		$("#session_monitor_modify").val(user['Monitor_modify_right']);
+		$("#session_monitor_control").val(user['Monitor_control_right']);
+		$("#session_event_del").val(user['Event_del_right']);
+		$("#session_event_download").val(user['Event_download_right']);
+		$("#session_log").val(user['Log_right']);
+		$("#session_plan").val(user['Plan_right']);
+	});
+}
+
+//登出
+function user_logout(){
+	if(confirm(word['word_confirm_exit'])){		
+		//退出时清除页面记忆
+		setCookie("parent","",-30);
+		setCookie("child","",-30);
+		setCookie("password_error","",-1);
+		
+		$.ajax({url:"index.php?do=ajax&view=user_login",async:false});
+		window.location.reload();
+	}
+}
+
+function main_get(){
+	//加载页面记忆
+	if(getCookie("parent")&&getCookie("child")){
+		var parent=parseInt(getCookie("parent"));
+		var child=getCookie("child");
+		$("#accordion").accordion("option","active",parent);
+		main_show(parent,child);
+	}else{
+		main_load("default");
+	}
+}
+
+//左侧子选项点击
+function main_show(parent,child){
+	$(".left_a").css("color","#7F7FB2");
+	$("#"+child).css("color","#00B6EF");
+	
+	//记住当前页面
+	setCookie("parent",parent,30);
+	setCookie("child",child,30);
+	
+	if(child=="monitor_list"){
+		setTimeout("auto_reload('"+child+"')",60000);
+	}else{
+		clearTimeout(t);
+	}
+	
+	main_load(child);
+}
+
+//内容载入刷新
+function main_load(op){
+	var time=new Date().getTime();//获取随机时间，为了每次载入不是缓存是重新加载
+	$("#main").empty();
+	$("#main").html("<img src='images/ajax-loader.gif' />&nbsp;"+word['word_loading']);
+	$("#main").load("skins/"+op+".html?time="+time);//载入分页面
+}
+
+//显示默认页面
+function main_default(){
+	setCookie("parent","",-30);
+	setCookie("child","",-30);
+	window.location.reload();
+}
+
+
+//自动刷新
+function auto_reload(child){
+	if(getCookie("child")==child){
+		main_load(child);
+		t=setTimeout("auto_reload('"+child+"')",60000);
+	}
+}
+</script>

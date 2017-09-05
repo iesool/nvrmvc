@@ -1,0 +1,30 @@
+<h3>
+  <table border="0" width="100%">
+    <tr>
+      <td align="left"><span class="word_system_operation">系统操作</span></td>
+      <td align="right"><a href="javascript:;" onClick="main_load('system_operation')"><span class="word_refresh">刷新</span></a></td>
+    </tr>
+  </table>
+</h3>
+
+<div id="op_tabs">
+  <ul class="tabs">
+    <li><a href="#tab_system_power" onClick="tab_load('system_power')" id="system_power"><span class="word_system_power">系统开关</span></a></li>
+    <li><a href="#tab_system_backup" onClick="tab_load('system_backup')" id="system_backup"><span class="word_system_backup">系统备份</span></a></li>
+    <li><a href="#tab_system_update" onClick="tab_load('system_update')" id="system_update"><span class="word_system_update">系统升级</span></a></li>
+  </ul>
+  
+  <div id="tab_system_power"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>
+  <div id="tab_system_backup"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>
+  <div id="tab_system_update"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();						   
+	$("#op_tabs").tabs();
+	tab_get('system_power');
+});
+</script>
+
+

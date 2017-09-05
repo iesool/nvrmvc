@@ -1,0 +1,12 @@
+*{margin:0; padding:0;}
+.clear{ clear:both; height:0; overflow:hidden; }
+
+#main{position:relative; width:100%; background:url("../images/bg.png") repeat center center;}
+#main .text{ float:left;  margin-top:15%; margin-left:12%; *margin-left:7%;}
+#main .signin{ float:right; width:450px; height:300px; margin-top:11%; margin-right:12%; *margin-right:7%; }
+#main .signin .wrap{ width:450px; height:300px; position:relative;  }
+#main  .signin .wrap .ctl{ position:absolute; top:53px; left:70px;  }
+#main .signin .wrap .ctl .inputctl{ width:240px; height:35px; margin-bottom:37px;*margin-bottom:35px; font-size:30px; }
+#main .signin .wrap .ctl .btn{ width:150px; height:30px; border:none; text-indent:9999; background:url("../images/btn_03.png") no-repeat -1px 0px; margin-left:200px  }
+
+

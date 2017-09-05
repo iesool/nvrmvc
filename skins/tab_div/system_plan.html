@@ -1,0 +1,222 @@
+<!--录像自动删除-->
+<div>
+  <table border="0" class="main_table">
+    <thead>
+      <tr>
+        <th width="12%"><span class="word_plan"></span></th>
+        <th><span class="word_type"></span></th>
+        <th><span class="word_setting"></span></th>
+        <th><span class="word_state"></span></th>
+        <th id="plan_op"><span class="word_operation"></span></th>
+      </tr>
+    </thead>
+    <tbody id="plan_table"><tr><td colspan="5"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading"></span></td></tr></tbody>
+  </table>
+</div>
+
+<div class="main_op">
+  <button id="plan_add" onClick="plan_op('add')"><span class="word_system_plan_add">添加计划</span></button>
+</div>
+
+
+<script type="text/javascript">
+//录像自动删除
+$(document).ready(function(){
+	language();
+	$("button").button();
+	
+	setTimeout(plan_right,0);//权限
+	
+	get_table("plan","index.php?do=ajax&view=system_set&op=get_plan_list",word['word_none']);
+});
+
+//权限
+function plan_right(){
+	if($("#session_plan").val()!=1){
+		$("#plan_op").hide();
+		$(".main_op").hide();
+	}
+}
+
+//获取计划类型
+function get_plan_type(){
+	if($("#plan_type_1").attr("checked")){
+		var plan_type=1;
+	}else{
+		var plan_type=2;
+	}
+	return plan_type;
+}
+
+
+//计划的增删改
+function plan_op(op,plan_id,set){
+	switch(op){
+		case "add":
+			if(set){
+				var plan_type=get_plan_type();
+				if(!$("#plan_name").val()){
+					alert(word['word_name_please']);
+					return fasle;
+				}
+				var url=encodeURI("index.php?do=ajax&view=system_set&op=set_plan&control=add&plan_name="+$("#plan_name").val()+"&plan_type="+plan_type+"&is_record="+$("#is_record").val());
+				$.ajax({url:url,async:false});
+				//main_load("system_set");
+				tab_load("system_plan");
+				parent_get_plan();
+				pop_close("plan");
+			}else{
+				pop_div(260,210,word['word_system_plan_add'],"plan");
+			}
+		break;
+		
+		case "edit":
+			if(set){
+				var plan_type=get_plan_type();
+				if(!$("#plan_name").val()){
+					alert(word['word_name_please']);
+					return fasle;
+				}
+				
+				if(plan_type!=$("#plan_type_yuan").val()){
+					if(!confirm(word['word_system_change_plan_warn'])){
+						return false;
+					}
+				}
+				var url=encodeURI("index.php?do=ajax&view=system_set&op=set_plan&control=edit&plan_id="+plan_id+"&plan_name="+$("#plan_name").val()+"&plan_type="+plan_type+"&plan_type_yuan="+$("#plan_type_yuan").val()+"&is_record="+$("#is_record").val());
+				$.ajax({url:url,async:false});
+				//main_load("system_set");
+				tab_load("system_plan");
+				parent_get_plan();
+				pop_close("plan");
+			}else{
+				$("#main").append("<input type='hidden' id='edit_plan_id' value='"+plan_id+"' />");
+				pop_div(260,210,word['word_system_plan_edit'],"plan");
+			}
+		break;
+		
+		case "del":
+			if(confirm(word['word_system_plan_del_confirm'])){
+				$.ajax({url:"index.php?do=ajax&view=system_set&op=set_plan&control=del&plan_id="+plan_id,async:false});
+				//main_load("system_set");
+				parent_get_plan();
+				tab_load("system_plan");
+			}
+		break;
+		
+		default:
+		break;
+	}
+}
+
+//如果是弹出层，刷新父弹出层的计划列表
+function parent_get_plan(){
+	if(document.getElementById("pop_div_monitor_plan")){
+		get_plan();
+	}
+}
+
+//时间段的增删改
+function timepart_op(op,plan_id,timepart_id,set){
+	switch(op){
+		case "add":
+			if(set){
+				var timepart=get_timepart();
+				if(timepart){
+					$.ajax({url:"index.php?do=ajax&view=system_set&op=set_timepart&control=add&plan_id="+plan_id+"&timepart="+timepart,async:false});
+					//main_load("system_set");
+					tab_load("system_plan");
+					pop_close("timepart");
+				}
+			}else{
+				$("#main").append("<input type='hidden' id='edit_plan_id' value='"+plan_id+"' />");
+				pop_div(450,150,word['word_system_timepart_add'],"timepart");
+			}
+		break;
+		
+		case "edit":
+			if(set){
+				var timepart=get_timepart();
+				if(timepart){
+					$.ajax({url:"index.php?do=ajax&view=system_set&op=set_timepart&control=edit&timepart_id="+timepart_id+"&timepart="+timepart,async:false});
+					//main_load("system_set");
+					tab_load("system_plan");
+					pop_close("timepart");
+				}
+			}else{
+				$("#main").append("<input type='hidden' id='edit_timepart_id' value='"+timepart_id+"' />");
+				pop_div(450,150,word['word_system_timepart_edit'],"timepart");
+			}
+		break;
+		
+		case "del":
+			if(confirm(word['word_system_timepart_del_confirm'])){
+				$.ajax({url:"index.php?do=ajax&view=system_set&op=set_timepart&control=del&timepart_id="+timepart_id,async:false});
+				//main_load("system_set");
+				tab_load("system_plan");
+			}
+		break;
+		
+		default:
+		break;
+	}
+	
+}
+
+//验证并获取时间段
+function get_timepart(){
+	if(!$("#start_hour").val()||!$("#end_hour").val()){
+		alert(word['word_system_time_please']);
+		return false;
+	}
+	
+	//判断是周重复还是时间段
+	if($("#timepart_type").val()==1){
+		if($("#start_week").val()>$("#end_week").val()){
+			alert(word['word_system_end_start_day']);
+			return false;
+		}else{
+			if($("#start_week").val()==$("#end_week").val()){
+				var start_time_arr=$("#start_hour").val().split(":");
+				var end_time_arr=$("#end_hour").val().split(":");
+				var start_num=parseInt(start_time_arr[0])*60+parseInt(start_time_arr[1]);
+				var end_num=parseInt(end_time_arr[0])*60+parseInt(end_time_arr[1]);
+				if(start_num>=end_num){
+					alert(word['word_system_end_start_time']);
+					return false;
+				}
+			}
+		}
+		var timepart=$("#start_week").val()+" "+$("#start_hour").val()+" "+$("#end_week").val()+" "+$("#end_hour").val();
+	}else{
+		if(!$("#start_date").val()||!$("#end_date").val()){
+			alert(word['word_system_time_please']);
+			return false;
+		}
+		
+		var start_date_arr=$("#start_date").val().split("-");
+		var end_date_arr=$("#end_date").val().split("-");
+		var start_date=Date.UTC(start_date_arr[0],start_date_arr[1],start_date_arr[2]);
+		var end_date=Date.UTC(end_date_arr[0],end_date_arr[1],end_date_arr[2]);
+		
+		if(start_date>end_date){
+			alert(word['word_system_end_start_day']);
+			return false;
+		}else{
+			if(start_date==end_date){
+				var start_time_arr=$("#start_hour").val().split(":");
+				var end_time_arr=$("#end_hour").val().split(":");
+				var start_num=parseInt(start_time_arr[0])*60+parseInt(start_time_arr[1]);
+				var end_num=parseInt(end_time_arr[0])*60+parseInt(end_time_arr[1]);
+				if(start_num>=end_num){
+					alert(word['word_system_end_start_time']);
+					return false;
+				}
+			}
+		}
+		var timepart=$("#start_date").val()+" "+$("#start_hour").val()+" "+$("#end_date").val()+" "+$("#end_hour").val();
+	}
+	
+	return timepart;
+}
+</script>

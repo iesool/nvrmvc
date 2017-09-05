@@ -1,0 +1,313 @@
+<div>
+  <form id="form_user">
+    <input type="hidden" value="" id="uid" name="uid" />
+    <table border="0">
+      <tr>
+        <td><span class="word_username">用户名</span></td>
+        <td><input type="text" value="" id="user_name" name="user_name" /></td>
+      </tr>
+      <tr class="old_password" style="display:none">
+        <td><span class="word_user_old_password">旧密码</span></td>
+        <td><input type="password" value="" id="old_password" name="old_password" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_password">密码</span></td>
+        <td><input type="password" value="" id="password" name="password" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_user_password_confirm">确定密码</span></td>
+        <td><input type="password" value="" id="password_conf" name="password_conf" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_monitor_watch">实时观看</span></td>
+        <td><input type="checkbox" value="1" id="watch_right" name="watch_right" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_monitor_event">录像观看</span></td>
+        <td><input type="checkbox" value="1" id="event_right" name="event_right" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_monitor_ptz">云台控制</span></td>
+        <td><input type="checkbox" value="1" id="ptz_control_right" name="ptz_right" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_user_group_modify_right">组管理</span></td>
+        <td><input type="checkbox" value="1" id="group_right" name="group_right" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_user_monitor_modify_right">前端设备编辑</span></td>
+        <td><input type="checkbox" value="1" id="monitor_modify_right" name="monitor_modify_right" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_user_monitor_control_right">前端设备控制</span></td>
+        <td><input type="checkbox" value="1" id="monitor_control_right" name="monitor_control_right" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_user_event_download_right">录像下载</span></td>
+        <td><input type="checkbox" value="1" id="event_download_right" name="event_download_right" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_user_event_delete_right">录像删除</span></td>
+        <td><input type="checkbox" value="1" id="event_del_right" name="event_del_right" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_user_log_operate_right">日志管理</span></td>
+        <td><input type="checkbox" value="1" id="log_right" name="log_right" /></td>
+      </tr>
+      <tr>
+        <td><span class="word_user_plan_modify_right">计划设置</span></td>
+        <td><input type="checkbox" value="1" id="plan_right" name="plan_right" /></td>
+      </tr>
+      <tr>
+        <td style="vertical-align:middle"><span class="word_user_enable_group">可管理组</span></td>
+        <td><select id="groups_right" name="groups_right[]" size="10" multiple="multiple" style="width:100%"></select></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	var uid=$("#edit_uid").val();
+	$("#edit_uid").remove();
+	
+	if(uid){
+		//修改用户
+		$.getJSON("index.php?do=ajax&view=user_list&op=get_user_arr&uid="+uid,function(user_arr){
+			$("#uid").val(uid);
+			$("#user_name").attr("disabled",true);
+			$("#user_name").val(user_arr['Username']);
+			
+			if(uid==1||$("#session_uid").val()!=1){
+				if($("#session_uid").val()!=1){
+					$(".old_password").show();
+				}
+				$("#watch_right").attr("disabled",true);
+				$("#event_right").attr("disabled",true);
+				$("#ptz_control_right").attr("disabled",true);
+				$("#group_right").attr("disabled",true);
+				$("#monitor_modify_right").attr("disabled",true);
+				$("#monitor_control_right").attr("disabled",true);
+				$("#event_download_right").attr("disabled",true);
+				$("#event_del_right").attr("disabled",true);
+				$("#log_right").attr("disabled",true);
+				$("#plan_right").attr("disabled",true);
+				$("#groups_right").attr("disabled",true);
+			}else{
+				$("#watch_right").attr("disabled",false);
+				$("#event_right").attr("disabled",false);
+				
+				if(user_arr['Watch_right']==1){
+					$("#ptz_control_right").attr("disabled",false);
+				}else{
+					$("#ptz_control_right").attr("disabled",true);
+				}
+				
+				$("#group_right").attr("disabled",false);
+				$("#monitor_modify_right").attr("disabled",false);
+				$("#monitor_control_right").attr("disabled",false);
+				
+				if(user_arr['Event_right']==1){
+					$("#event_download_right").attr("disabled",false);
+					$("#event_del_right").attr("disabled",false);
+				}else{
+					$("#event_download_right").attr("disabled",true);
+					$("#event_del_right").attr("disabled",true);
+				}
+				
+				$("#log_right").attr("disabled",false);
+				$("#plan_right").attr("disabled",false);
+				$("#groups_right").attr("disabled",false);
+			}
+			if(user_arr['Watch_right']==1){
+				$("#watch_right").attr("checked",true);
+			}
+			if(user_arr['Event_right']==1){
+				$("#event_right").attr("checked",true);
+			}
+			if(user_arr['Ptz_right']==1){
+				$("#ptz_control_right").attr("checked",true);
+			}
+			if(user_arr['Group_right']==1){
+				$("#group_right").attr("checked",true);
+			}
+			if(user_arr['Monitor_modify_right']==1){
+				$("#monitor_modify_right").attr("checked",true);
+			}
+			if(user_arr['Monitor_control_right']==1){
+				$("#monitor_control_right").attr("checked",true);
+			}
+			if(user_arr['Event_download_right']==1){
+				$("#event_download_right").attr("checked",true);
+			}
+			if(user_arr['Event_del_right']==1){
+				$("#event_del_right").attr("checked",true);
+			}
+			if(user_arr['Log_right']==1){
+				$("#log_right").attr("checked",true);
+			}
+			if(user_arr['Plan_right']==1){
+				$("#plan_right").attr("checked",true);
+			}
+			
+			var groups=user_arr['Groups'].split(",");
+			var groups_options="";
+			for(i in user_arr['group_arrs']){
+				var k=0;
+				for(j in groups){
+					if(groups[j]==user_arr['group_arrs'][i]['Id']){
+						k++;
+						break;
+					}
+				}
+				if(k>0){
+					groups_options+="<option value="+user_arr['group_arrs'][i]['Id']+" selected>"+user_arr['group_arrs'][i]['Name']+"</option>";
+				}else{
+					groups_options+="<option value="+user_arr['group_arrs'][i]['Id']+">"+user_arr['group_arrs'][i]['Name']+"</option>";
+				}
+			}
+			$("#groups_right").html(groups_options);
+		});
+	}else{
+		//添加用户
+		$.getJSON("index.php?do=ajax&view=user_list&op=get_user_arr",function(group_arrs){
+			$("#watch_right").attr("checked",true);
+			$("#event_right").attr("checked",true);
+			
+			var groups_options="";
+			for(i in group_arrs){
+				groups_options+="<option value="+group_arrs[i]['Id']+">"+group_arrs[i]['Name']+"</option>"
+			}
+			$("#groups_right").html(groups_options);
+		});																			   
+	}
+	
+	
+	//不能观看实时时也不能云台
+	$("#watch_right").click(function(){
+		if($("#watch_right").attr("checked")){
+			$("#ptz_control_right").attr("disabled",false);
+		}else{
+			$("#ptz_control_right").attr("disabled",true);
+		}
+	});
+	
+	//不能观看录像时也不能下载和删除
+	$("#event_right").click(function(){
+		if($("#event_right").attr("checked")){
+			$("#event_download_right").attr("disabled",false);
+			$("#event_del_right").attr("disabled",false);
+		}else{
+			$("#event_download_right").attr("disabled",true);
+			$("#event_del_right").attr("disabled",true);
+		}
+	});
+	
+	if(word['word_online']=='登录为'){
+		pop_buttons({
+			"确定":function(){
+				if(uid){
+					form_user("user_edit");
+				}else{
+					form_user("user_creat");
+				}
+			},
+			"取消":function(){
+				pop_close("user");
+			}
+		},"user");
+	}else{
+		pop_buttons({
+			"Accept":function(){
+				if(uid){
+					form_user("user_edit");
+				}else{
+					form_user("user_creat");
+				}
+			},
+			"Cancel":function(){
+				pop_close("user");
+			}
+		},"user");
+	}
+	
+});
+
+//添加新用户验证
+function user_creat_validate(){
+	if(!$("#user_name").val()){
+		alert(word['word_name_please']);
+		return false;
+	}
+	var is_name=$.ajax({url:"index.php?do=ajax&view=user_list&op=user_name_validate&user_name="+$("#user_name").val(),async:false});
+	if(is_name.responseText){
+		alert(word['word_name_exists']);
+		return false;
+	}
+	if(!$("#password").val()){
+		alert(word['word_password_please']);
+		return false;
+	}
+	if($("#password").val().length<6){
+		alert(word['word_user_password_less_6']);
+		return false;
+	}
+	if($("#password_conf").val()!=$("#password").val()){
+		alert(word['word_user_password_input_inconsistency']);
+		return false;
+	}
+	if(!$("#groups_right").val()){
+		alert(word['word_user_group_least']);
+		return false;
+	}
+	return true;
+}
+
+//修改用户验证
+function user_edit_validate(){
+	if($("#old_password").val()||$("#password").val()||$("#password_conf").val()){
+		if($("#session_uid").val()!=1){
+			var old_password=$.ajax({url:"index.php?do=ajax&view=user_list&op=user_password_validate&uid="+$("#session_uid").val()+"&old_password="+$("#old_password").val(),async:false});
+			if(!old_password.responseText){
+				alert(word['word_user_old_password_error']);
+				return false;
+			}
+		}
+		if($("#password").val().length<6){
+			alert(word['word_user_password_less_6']);
+			return false;
+		}
+		if($("#password_conf").val()!=$("#password").val()){
+			alert(word['word_user_password_input_inconsistency']);
+			return false;
+		}
+	}
+	if(!$("#groups_right").val()){
+		alert(word['word_user_group_least']);
+		return false;
+	}
+	return true;
+}
+
+//表单验证提交
+function form_user(op){
+	if(op=="user_creat"){
+		if(!user_creat_validate()){
+			return false;
+		}
+	}else if(op=="user_edit"){
+		if(!user_edit_validate()){
+			return false;
+		}
+	}else{
+		return false;
+	}
+	$.post("index.php?do=ajax&view=user_list&op="+op,$("#form_user").serialize());
+	pop_close("user");
+	if(!document.getElementById("main_iframe")){
+		main_load("user_list");
+	}
+}
+</script>

@@ -1,0 +1,34 @@
+<h3>
+  <table border="0" width="100%">
+    <tr>
+      <td align="left"><span class="word_system_log">系统日志</span></td>
+      <td align="right"><a href="javascript:;" onClick="main_load('system_log')"><span class="word_refresh">刷新</span></a></td>
+    </tr>
+  </table>
+</h3>
+
+<div id="log_tabs">
+  <ul class="tabs">
+    <li><a href="#tab_system_log_db" onClick="tab_load('system_log_db')" id="system_log_db"><span class="word_system_log_db">当前日志</span></a></li>
+    <li><a href="#tab_system_log_file" onClick="tab_load('system_log_file')" id="system_log_file"><span class="word_system_log_file">备份文件</span></a></li>
+    <li><a href="#tab_system_log_disk" onClick="tab_load('system_log_disk')" id="system_log_disk"><span class="word_system_log_disk">底层运行日志</span></a></li>
+  </ul>
+  
+  <!--当前日志-->
+  <div id="tab_system_log_db"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>
+  
+  <!--备份文件-->
+  <div id="tab_system_log_file"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>
+  
+  <!--磁盘运行日志-->
+  <div id="tab_system_log_disk"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();						   
+	$('#log_tabs').tabs();
+	tab_get('system_log_db');
+});
+</script>
+

@@ -1,0 +1,162 @@
+<!--设备切换-->
+<div style="overflow-y:scroll">
+  <table border="0" class="main_table">
+    <thead>
+      <tr>
+        <!--<th width="20%">Id</th>-->
+        <th width="35%"><span class="word_name">名称</span></th>
+        <th width="35%">IP</th>
+        <th width="10%"><span class="word_operation">操作</span></th>
+      </tr>
+    </thead>
+    <tbody id="system_machines_table"><tr><td colspan="3"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中，请稍候...</span></td></tr></tbody>
+  </table>
+</div>
+
+<div class="main_op"><button onClick='machine_add()'><span class="word_system_machine_add">添加设备</span></button></div>
+
+
+<div id="pop_machine" class="pop_div" title="添加设备">
+  <form id="form_machine">
+    <input type="hidden" name="machine_id" id="machine_id" value="" />
+    <table>
+      <tr>
+        <td><span class="word_name">名称</span></td><td><input type="text" name="machine_name" id="machine_name" value="" /></td><td id="machine_name_validate" class="validate"></td>
+      </tr>
+      <tr>
+        <td>IP</td><td><input type="text" name="machine_ip" id="machine_ip" value="" /></td><td id="machine_ip_validate" class="validate"></td>
+      </tr>
+      <tr>
+        <td><span class="word_username">用户名</span></td><td><input type="text" name="machine_username" id="machine_username" value="" /></td><td id="machine_username_validate" class="validate"></td>
+      </tr>
+      <tr>
+        <td><span class="word_password">密码</span></td><td><input type="text" name="machine_password" id="machine_password" value="" /></td><td id="machine_password_validate" class="validate"></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<script type="text/javascript">	
+$(document).ready(function(){
+	language();
+	
+	$("button").button();					   
+	get_table("system_machines","index.php?do=ajax&view=console&op=get_machines&get=set",word['word_none']);
+	
+	
+	if(word['word_online']=="登录为"){
+		$("#pop_machine").dialog({
+			height: 250,
+			width: 300,
+			modal: true,
+			title:word['word_system_machine_add'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"确定": function() {
+					machine_validate();
+				},
+				"取消": function() { 
+					$(this).dialog("close"); 
+				}
+			},
+			close:function(){
+				$(".validate").empty();
+			}
+		});
+	}else{
+		$("#pop_machine").dialog({
+			height: 250,
+			width: 300,
+			modal: true,
+			title:word['word_system_machine_add'],
+			autoOpen:false,
+			resizable:false,
+			buttons: {
+				"Accept": function() {
+					machine_validate();
+				},
+				"Cancel": function() { 
+					$(this).dialog("close"); 
+				}
+			},
+			close:function(){
+				$(".validate").empty();
+			}
+		});
+		
+	}
+});
+
+function machine_add(){
+	$("#form_machine").clearForm();
+	$("#pop_machine").dialog("open");
+}
+
+function machine_del(id){
+	if(confirm(word['word_system_delete_machine_confirm'])){
+		$.ajax({url:"index.php?do=ajax&view=system_set&op=machine_del&id="+id,aysnc:false});
+		main_load("system_set");
+	}
+}
+
+function machine_edit(id){
+	$("#form_machine").clearForm();
+	$.getJSON("index.php?do=ajax&view=system_set&op=get_machine&id="+id,function(machine_arr){
+		$("#machine_id").val(machine_arr['Id']);
+		$("#machine_name").val(machine_arr['Name']);
+		$("#machine_ip").val(machine_arr['Ip']);
+		$("#machine_username").val(machine_arr['Username']);
+		$("#machine_password").val(machine_arr['Password']);
+	});
+	$("#pop_machine").dialog("open");
+}
+
+function machine_validate(){
+	if(!$("#machine_name").val()){
+		$("#machine_name_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_name_please']);
+		return false;
+	}else{
+		$("#machine_name_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+	}
+	
+	if(!$("#machine_ip").val()){
+		$("#machine_ip_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_ip_please']);
+		return false;
+	}
+	if(!$("#machine_ip").val().match(/(?:\d+\.){3}(?:\d+)/)){
+		$("#machine_ip_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_ip_format_false']);
+		return false;
+	}else{
+		$("#machine_ip_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+	}
+	
+	if(!$("#machine_username").val()){
+		$("#machine_username_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_username_please']);
+		return false;
+	}else{
+		$("#machine_username_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+	}
+	
+	if(!$("#machine_password").val()){
+		$("#machine_password_validate").html("<img src='../images/diskdead.png' width=15 height=15 />");
+		alert(word['word_password_please']);
+		return false;
+	}else{
+		$("#machine_password_validate").html("<img src='../images/diskinuse.png' width=15 height=15 />");
+	}
+	
+	if($("#machine_id").val()!=""){
+		var url="index.php?do=ajax&view=system_set&op=machine_edit&id="+$("#machine_id").val();
+	}else{
+		var url="index.php?do=ajax&view=system_set&op=machine_add";
+	}
+	$.post(url,$("#form_machine").serialize());
+	$("#pop_machine").dialog("close");
+	main_load("system_set");
+}
+</script>

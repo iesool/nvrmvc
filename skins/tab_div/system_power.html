@@ -1,0 +1,108 @@
+<div>
+  <table border="0" cellpadding="10" cellspacing="0">
+    <tr>
+      <td>NVR&nbsp;<span id="power_lable"></span>：</td>
+      <td><button id="power">启动</button></td>
+      <td><span class="word_system_soft_power_info">该操作是将本软件的后台服务启动或关闭。</span>&nbsp;&nbsp;&nbsp;<input type="checkbox" id="is_auto" />&nbsp;<span class="word_system_auto_nvr">开机自动启动</span>&nbsp;<button style="font-size:10px" id="auto_nvr"><span class="word_accept">确定</span></button></td>
+    </tr>
+    <tr>
+      <td><span class="word_system_power">机器关机</span></td>
+      <td><button id="system_down">关机</button></td>
+      <td><span class="word_system_power_info">该操作是将硬件关机。</span></td>
+    </tr>
+    <tr>
+      <td><span class="word_system_restart">机器重启</span></td>
+      <td><button id="system_restart">重启</button></td>
+      <td><span class="word_system_restart_info">该操作是将硬件重启</span></td>
+    </tr>
+  </table>
+</div>
+
+<!--<div><strong>重要提示：请在执行这些操作前将系统关闭！</strong></div>
+<div class="main_op">
+  <input type="button" value="重启" id="system_restart" />
+  <input type="button" value="关机" id="system_down" />
+</div>-->
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("button").button();
+	language();
+	
+	//按钮样式(jquery ui)
+	$("#power").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-close"
+		}
+	});
+	$("#system_down").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-power"
+		}
+	});
+	$("#system_restart").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-arrowrefresh-1-e"
+		}
+	});
+	
+	var backinfo=$.ajax({url:"index.php?do=ajax&view=system_power&op=get_system_state",async:false});
+	if(backinfo.responseText==1){
+		$("#power").button("option","icons",{primary:'ui-icon-close'});
+		$("#power").attr("title",word['word_system_close']);
+		$("#power_lable").html(word['word_system_close']);
+	}else{
+		$("#power").button("option","icons",{primary:'ui-icon-check'});
+		$("#power").attr("title",word['word_system_start']);
+		$("#power_lable").html(word['word_system_start']);
+	}
+	
+	var backinfo=$.ajax({url:"index.php?do=ajax&view=system_power&op=system_auto_nvr&set=get",async:false});
+	if(backinfo.responseText==1){
+		$("#is_auto").attr("checked",true);
+	}else{
+		$("#is_auto").attr("checked",false);
+	}
+	
+	$("#power").click(function(){
+		setCookie("monitor_init",1,100,"second");
+		$(".main").html("<img src='images/ajax-loader.gif' />&nbsp;"+word['word_system_change_wait']);
+		$.ajax({url:"index.php?do=ajax&view=system_power&op=system_state",async:true});
+		setTimeout('window.location.reload()',2000);
+	});
+	
+	$("#auto_nvr").click(function(){
+		if($("#is_auto").attr("checked")){
+			if(confirm(word['word_system_auto_nvr_confirm'])){
+				var is_auto=1;
+			}else{
+				return false;
+			}
+		}else{
+			var is_auto=0;
+		}
+		$.ajax({url:"index.php?do=ajax&view=system_power&op=system_auto_nvr&set=set&is_auto="+is_auto,async:false});
+		main_load("system_operation");
+	});
+	
+	$("#system_down").click(function(){
+		if(confirm(word['word_system_power_confirm'])){
+			system_operation(0,word['word_system_powered_info']);
+		}
+	});
+	$("#system_restart").click(function(){
+		if(confirm(word['word_system_restart_confirm'])){
+			system_operation(6,word['word_system_restarted_info']);
+		}
+	});
+});
+
+function system_operation(cmd,alt){
+	$.ajax({url:"index.php?do=ajax&view=system_power&op=system_power&cmd="+cmd,async:false});
+	$(".main").html("<img src='images/ajax-loader.gif' />&nbsp;"+alt);
+	window.close();
+}
+</script>

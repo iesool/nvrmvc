@@ -1,0 +1,45 @@
+<div id="operator_tabs">
+  <ul class="tabs">
+    <li><a href="#tab_system_plan" onClick="tab_load('system_plan')" id="system_plan"><span class="word_monitor_event_plan">录像计划</span></a></li>
+    <li><a href="#tab_system_log_db" onClick="tab_load('system_log_db')" id="system_log_db"><span class="word_system_log_db">当前日志</span></a></li>
+    <!--<li><a href="#tab_system_log_disk" onClick="tab_load('system_log_disk')" id="system_log_disk"><span class="word_system_log_disk">磁盘运行日志</span></a></li>-->
+    <!--<li><a href="#tab_system_log_file" onClick="tab_load('system_log_file')" id="system_log_file"><span class="word_system_log_file">备份文件</span></a></li>-->
+    <!--<li><a href="#tab_system_time" onClick="tab_load('system_time')" id="system_time"><span class="word_system_time">系统时间</span></a></li>-->
+    <!--<li><a href="#tab_system_log_config" onClick="tab_load('system_log_config')" id="system_log_config"><span class="word_system_log_backup">日志备份</span></a></li>-->
+    <!--<li><a href="#tab_system_auto_del" onClick="tab_load('system_auto_del')" id="system_auto_del"><span class="word_system_auto_del">自动删除</span></a></li>-->
+    
+    <!--<li><a href="#tab_system_machines" onClick="tab_load('system_machines')" id="system_machines"><span class="word_cms">集中管理</span></a></li>-->
+    <!--<li><a href="#tab_system_power" onClick="tab_load('system_power')" id="system_power"><span class="word_system_power">系统开关</span></a></li>-->
+    <!--<li><a href="#tab_system_backup" onClick="tab_load('system_backup')" id="system_backup"><span class="word_system_backup">系统备份</span></a></li>-->
+    <!--<li><a href="#tab_system_update" onClick="tab_load('system_update')" id="system_update"><span class="word_system_update">系统升级</span></a></li>-->
+  </ul>
+  
+  <div id="tab_system_plan"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>
+  <div id="tab_system_log_db"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>
+  <!--<div id="tab_system_log_disk"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>-->
+  <!--<div id="tab_system_log_file"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>-->
+  <!--<div id="tab_system_time"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>-->
+  <!--<div id="tab_system_log_config"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>-->
+  <!--<div id="tab_system_auto_del"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>-->
+  <!--<div id="tab_system_machines"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>-->
+  <!--<div id="tab_system_power"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>-->
+  <!--<div id="tab_system_backup"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>-->
+  <!--<div id="tab_system_update"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></div>-->
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	var setting=$("#edit_setting").val();
+	$("#edit_setting").remove();
+	
+	$("#operator_tabs").tabs();
+	
+	if(setting){
+		tab_load(setting);
+	}else{
+		tab_get('system_plan');
+	}
+});
+</script>

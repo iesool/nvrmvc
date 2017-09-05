@@ -1,0 +1,1805 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link type="text/css" rel="stylesheet" href="../css/console.css" />
+<link type="text/css" rel="stylesheet" href="../css/operator.css" />
+<link type="text/css" rel="stylesheet" href="../css/jquery-ui-1.8.17.custom.css" />	
+<link type="text/css" rel="stylesheet" href="../css/zTreeStyle.css" />	
+
+<script type="text/javascript" src="/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.17.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.form.js"></script>
+<script type="text/javascript" src="/js/jquery.bgiframe.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ztree.all-3.1.min.js"></script>
+
+<script>
+var word=$.ajax({url:"index.php?do=ajax&view=console&op=get_language",async:false});
+word=word.responseText;
+word=eval("("+word+")");
+
+function language(){
+	for(i in word){
+		$("."+i).html(word[i]);
+	}	
+}
+</script>
+
+<script type="text/javascript" src="../js/functions.js"></script>
+<script type="text/javascript" src="../js/my_table.js"></script>
+<title>NVR - operator</title>
+</head>
+
+<body>
+  <!--显示头部LOGO图片-->
+  <div class="header"></div>
+  <!--状态栏-->
+  <div class="banner">
+    <table border="0">
+      <tr>
+        <td style="text-align:left"><span id="datetime"></span></td><!--服务器时间和日期-->
+        <td>
+          <span class="word_online">登录为</span>&nbsp;
+          <span id="username"></span>&nbsp;
+          <a href="javascript:;" onClick="user_logout()"><span class="word_exit">退出</span></a>
+          <!--权限隐藏域-->
+          <input type="hidden" id="session_uid" value="" />
+          <input type="hidden" id="session_watch" value="" />
+          <input type="hidden" id="session_event" value="" />
+          <input type="hidden" id="session_ptz" value="" />
+          <input type="hidden" id="session_group" value="" />
+          <input type="hidden" id="session_monitor_modify" value="" />
+          <input type="hidden" id="session_monitor_control" value="" />
+          <input type="hidden" id="session_event_del" value="" />
+          <input type="hidden" id="session_event_download" value="" />
+          <input type="hidden" id="session_log" value="" />
+          <input type="hidden" id="session_plan" value="" />
+        </td>
+        <td>
+          <span class="word_version">版本号</span>&nbsp;
+          <span id="version"></span>
+        </td>
+        <!--<td><a href="javascript:;" onClick="pop_div(800,600,word['word_help'],'help')"><span class="word_help">帮助说明</span></a></td>-->
+        <td>
+          <span class="word_state">状态</span>&nbsp;
+          <span id="state"></span>
+        </td>
+      </tr>
+    </table>
+  </div>
+  
+  <!--main-->
+  <div id="main" style="margin-top:10px">
+    <table border="1" cellpadding="0" cellspacing="0" width="100%">
+    
+      <!--上边-->
+      <tr>
+        <!--设备树-->
+        <td style="vertical-align:top">
+          <div class="left_header"><span class="word_fee">前端设备</span></div>		
+          <div class="left_main"><ul id="fee_tree" class="ztree"></ul></div>
+          
+  		  <!--右键菜单-->	
+          <div id="r_all" class="r_menu"><!--全部-->
+            <table border="0">
+              <tr class="r_group_creat">
+                <td><a href="javascript:;" id="r_group_creat"><span class="word_monitor_group_add"></span></a></td>
+              </tr>
+              <tr class="r_monitor_creat">
+                <td><a href="javascript:;" id="r_monitor_creat"><span class="word_monitor_creat"></span></a></td>
+              </tr>
+              <tr class="r_monitor_discover">
+                <td><a href="javascript:;" id="r_monitor_discover"><span class="word_monitor_discover"></span></a></td>
+              </tr>
+            </table>
+          </div>
+          
+          <div id="r_group" class="r_menu"><!--组-->
+            <table border="0">
+              <tr class="r_group_monitor_add">
+                <td><a href="javascript:;" id="r_group_add"><span class="word_monitor_group_monitor_add"></span></a></td>
+              </tr>
+              <tr class="r_group_monitor_remove">
+                <td><a href="javascript:;" id="r_group_remove"><span class="word_monitor_group_monitor_remove"></span></a></td>
+              </tr>
+              <tr class="r_group_edit">
+                <td><a href="javascript:;" id="r_group_edit"><span class="word_monitor_group_edit"></span></a></td>
+              </tr>
+              <tr class="r_group_delete">
+                <td><a href="javascript:;" id="r_group_del"><span class="word_delete"></span></a></td>
+              </tr>
+            </table>
+          </div>
+          
+          <div id="r_monitor" class="r_menu"><!--前端设备-->
+            <table border="0">
+              <tr class="r_monitor_watch">
+                <td><a href="javascript:;" id="r_monitor_watch"><span class="word_monitor_watch"></span></a></td>
+              </tr>	
+              <tr class="r_monitor_record_start">
+                <td><a href="javascript:;" id="r_monitor_record_start"><span class="word_monitor_record_start"></span></a></td>
+              </tr>
+              <tr class="r_monitor_record_stop">
+                <td><a href="javascript:;" id="r_monitor_record_stop"><span class="word_monitor_record_stop"></span></a></td>
+              </tr>
+              <tr class="r_monitor_event_list">
+                <td><a href="javascript:;" id="r_monitor_event_list"><span class="word_monitor_event_list"></span></a></td>
+              </tr>	
+              <tr class="r_monitor_edit">
+                <td><a href="javascript:;" id="r_monitor_edit"><span class="word_monitor_edit"></span></a></td>
+              </tr>
+              <tr class="r_monitor_delete">
+                <td><a href="javascript:;" id="r_monitor_delete"><span class="word_delete"></span></a></td>
+              </tr>
+            </table>
+          </div>
+        </td>
+        
+        <!--主屏-->
+        <td>
+          <div>
+            <input type="hidden" id="main_iframe_src" value="" /><!--弹出层时暂存的src-->
+            <iframe name="main_iframe" id="main_iframe" src="" marginwidth="0" marginheight="0" frameborder="0" width="646" scrolling="no"></iframe>
+          </div>
+          
+          <div id="main_console">
+            <table border="0" width="100%" style="text-align:center">
+              <tr>
+                <td width="5%">&nbsp;</td>
+                <td width="40px"><button class="prev" id="main_event_prev"><span class="word_monitor_event_prev"></span></button></td>
+                <td width="40px"><button class="slow" id="main_event_slow"><span class="word_monitor_event_slow"></span></button></td>
+                <td width="40px"><button class="stop" id="main_event_stop" style="font-size:18px"><span class="word_monitor_event_stop"></span></button></td>
+                <td width="45px"><button class="toggle" id="main_event_toggle" style="font-size:18px"><span class="word_monitor_pause_play"></span></button></td>
+                <td width="40px"><button class="fast" id="main_event_fast"><span class="word_monitor_event_fast"></span></button></td>
+                <td width="40px"><button class="next" id="main_event_next"><span class="word_monitor_event_next"></span></button></td>
+                <td><span class="word_monitor_event_time"></span>&nbsp;<span id="main_event_time">XXXX-XX-XX --:--:--</span>&nbsp;<span class="word_monitor_file_time"></span>&nbsp;<span id="main_file_time">--:--/--:--</span></td>
+              </tr>
+            </table>
+          </div>
+        </td>
+        
+        <!--右侧-->
+        <td style="vertical-align:top">
+          <!--云台控制-->
+          <div class="right_header" id="main_ptz_header"><span class="word_monitor_ptz">云台控制</span></div>
+          <div class="right_main" id="main_ptz" style="overflow-y:scroll">
+            <!--焦距视角-->
+            <table border="0" align="center" style="margin-top:10px; width:80%"> 
+              <tr class="ptz_auto">
+                <td><span class="word_monitor_ptz_auto"></span></td>
+                <td><button id="ptz_auto_on" style="font-size:10px" onClick="main_iframe.ptz('auto','on')"><span class="word_on"></span></button></td>
+                <td><button id="ptz_auto_off" style="font-size:10px" onClick="main_iframe.ptz('auto','off')"><span class="word_off"></span></button></td>
+                <!--<td><button id="ptz_auto" style="font-size:10px" onClick="main_iframe.ptz('auto')"><span class="word_monitor_ptz_auto"></span></button></td>-->
+                <!--<td><span id="ptz_auto_state"></span></td>-->
+              </tr>
+              <!--<tr class="ptz_iris">
+                <td><span class="word_monitor_ptz_iris"></span></td>
+                <td><button id="ptz_iris" style="font-size:10px" onClick="main_iframe.ptz('iris')"><span class="word_monitor_ptz_iris"></span></button></td>
+                <td><span id="ptz_iris_state"></span></td>
+              </tr>-->
+              <!--<tr class="ptz_focus">
+                <td width="40%"><span class="word_monitor_ptz_focus"></td>
+                <td>
+                  <button id="ptz_focus_out" style="font-size:10px" onClick="main_iframe.ptz('focus','out')"><span class="word_monitor_ptz_focus_out"></span></button>
+                </td>
+                <td>
+                  <button id="ptz_focus_in" style="font-size:10px" onClick="main_iframe.ptz('focus','in')"><span class="word_monitor_ptz_focus_in"></span></button>
+                </td>
+              </tr>-->
+              <tr class="ptz_zoom">
+                <td><span class="word_monitor_ptz_zoom"></span></td>
+                <td>
+                  <button id="ptz_zoom_out" style="font-size:10px" onMouseDown="main_iframe.ptz('zoom','out')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_zoom_out"></span></button>
+                </td>
+                <td>
+                  <button id="ptz_zoom_in" style="font-size:10px" onMouseDown="main_iframe.ptz('zoom','in')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_zoom_in"></span></button>
+                </td>
+              </tr>
+            </table>
+            
+            <!--方向-->
+            <table border="0" align="center" style="margin-top:10px;">
+              <tr>
+                <td><button id="ptz_leftup" onMouseDown="main_iframe.ptz('direct','leftup')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_leftup"></span></button></td>
+                <td><button id="ptz_up" onMouseDown="main_iframe.ptz('direct','up')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_up"></span></button></td>
+                <td><button id="ptz_rightup" onMouseDown="main_iframe.ptz('direct','rightup')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_rightup"></span></button></td>
+              </tr>
+              <tr>
+                <td><button id="ptz_left" onMouseDown="main_iframe.ptz('direct','left')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_left"></span></button></td>
+                <td><button id="ptz_home" onClick="main_iframe.ptz('home','goto')"><span class="word_monitor_ptz_home"></span></td>
+                <td><button id="ptz_right" onMouseDown="main_iframe.ptz('direct','right')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_right"></span></button></td>
+              </tr>
+              <tr>
+                <td><button id="ptz_leftdown" onMouseDown="main_iframe.ptz('direct','leftdown')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_leftdown"></span></button></td>
+                <td><button id="ptz_down" onMouseDown="main_iframe.ptz('direct','down')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_down"></span></button></td>
+                <td><button id="ptz_rightdown" onMouseDown="main_iframe.ptz('direct','rightdown')" onMouseUp="main_iframe.ptz('direct','stop')"><span class="word_monitor_ptz_rightdown"></span></button></td>
+              </tr>
+            </table>
+              
+            <!--速度预设点-->  
+            <table border="0" align="center" style="margin-top:10px; width:90%">	
+              <tr>
+                <td><span class="word_speed"></span></td>
+                <td>
+                  <select id="ptz_speed" onChange="main_iframe.ptz('speed',this.value)">
+                    <option value="1" id="ptz_speed_val_1">1x</option>
+                    <option value="2" id="ptz_speed_val_2">2x</option>
+                    <option value="3" id="ptz_speed_val_3">3x</option>
+                    <option value="4" id="ptz_speed_val_4">4x</option>
+                    <option value="5" id="ptz_speed_val_5">5x</option>
+                    <option value="6" id="ptz_speed_val_6">6x</option>
+                    <option value="7" id="ptz_speed_val_7">7x</option>
+                    <option value="8" id="ptz_speed_val_8">8x</option>
+                    <option value="9" id="ptz_speed_val_9">9x</option>
+                    <option value="10" id="ptz_speed_val_10">10x</option>
+                  </select>
+                </td>
+                <!--<td>&nbsp;</td>-->
+              </tr>
+              <tr class="ptz_preset">
+                <td><span class="word_monitor_ptz_preset"></span></td>
+                <td><select id="ptz_preset" onChange="main_iframe.ptz('preset','goto',this.value)"></select></td>
+                <!--<td><button id="ptz_preset_set" style="font-size:10px" onClick="main_iframe.ptz('preset','pop')"><span class="word_monitor_ptz_preset"></span></button></td>-->
+              </tr>
+            </table>
+            
+            <!--云台操作日志-->
+            <table border="0" align="center" style="margin-top:10px; width:90%">
+              <tr>
+                <td><span class="word_monitor_ptz_log"></span></td>
+                <td><a href="#" onclick="$('#ptz_log').empty()"><span class="word_clear"></span></a></td>
+              </tr>
+              <tr>
+                <td colspan="2"><div id="ptz_log" style="overflow-y:scroll; width:100%; height:60px; border:1px solid #ccc; text-align:left"></div></td>
+              </tr>
+            </table>
+          </div>
+          
+          <!--没有ptz-->
+          <div class="right_main" id="main_ptz_none" style="display:none"><div align="center"><span class="word_none"></span></div></div>
+          
+          <!--播放列表-->
+          <div class="right_header" id="main_event_list_header"><span class="word_monitor_event_list">播放列表</span></div>
+          <div class="right_main" id="main_event_list" style="overflow:scroll">
+            <table border="0" id="main_event_list_table"></table>
+          </div>
+        </td>
+      </tr>
+ 
+ 
+      <!--下边-->
+      <tr>
+        <!--批量按钮-->
+        <td align="center" style="height:50px">
+          <table>
+            <tr>
+              <td>
+                <button class="delete" id="main_delete" onClick="muti_op(2)"><span class="word_delete"></span></button>
+                <button class="plan" id="main_plan" onClick="muti_op(5)"><span class="word_plan"></span></button>
+                <button class="stop" id="main_record_stop" onClick="muti_op(1)"><span class="word_monitor_record_stop"></span></button>
+                <button class="start" id="main_record_start" onClick="muti_op(0)"><span class="word_monitor_record_start"></span></button>
+              </td>
+            </tr>
+          </table>
+        </td>
+        
+        <!--主屏控制-->
+        <td align="center">
+          <table border="0" cellpadding="0" cellspacing="0" style="width:630px; text-align:center">
+            <tr>
+              <!--<td width="40px"><button class="muti_pop" onClick="muti_op(4)"><span class="word_monitor_muti"></span></button></td>-->
+              
+              <td width="20px"><span class="word_monitor_way">路数</span></td>	
+              <td width="50px">
+                <select id="main_muti">
+                  <option value="2" id="main_muti_2">2*2</option>
+                  <option value="3" id="main_muti_3">3*3</option>
+                </select>
+              </td>
+              
+              <td width="60px"><span class="word_monitor_hide_bar">状态栏</span></td>
+              <td width="20px"><input type="checkbox" id="main_hide_bar" /></td>
+              
+              <td class="main_turn">&nbsp;</td>
+              <td class="main_turn" width="40px"><span class="word_monitor_turn">轮巡</span></td>
+              <td class="main_turn" width="30px"><input type="checkbox" id="main_turn" /></td>
+              <td class="main_turn" width="55px"><span class="word_monitor_turn_time">轮巡时间</span></td>
+              <td class="main_turn" width="150px">
+                <select id="main_turn_minute"></select>&nbsp;<span class="word_minute">分钟</span>
+                <select id="main_turn_second"></select>&nbsp;<span class="word_second">秒</span>
+              </td>
+              <td class="main_turn">&nbsp;</td>
+              
+              <td class="main_timepart"><span class="word_system_timepart">时间段</span></td>
+              <td class="main_timepart">
+                <input class="" type="text" onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="" id="main_start_time" size="15">
+                <input class="" type="text" onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="" id="main_end_time" size="15">
+              </td>
+              
+              <td width="60px"><span class="word_monitor_auto_play">自动播放</span></td>
+              <td width="20px"><input type="checkbox" id="main_auto_play" /></td>
+              
+              <td width="80px">
+              	<button class="stop" id="main_stop" onClick="play_init('beto','stop')"><span class="word_monitor_enable_stop"></span></button>
+                <button class="play" id="main_play" onClick="play_init('beto','play')"><span class="word_monitor_enable_play"></span></button>
+              </td>
+            </tr>
+          </table>
+        </td>
+        
+        <!--设置按钮-->
+        <td align="center">
+          <table>
+            <tr>
+              <td>
+                <button class="setting" onClick="pop_div(800,600,word['word_setting'],'setting')"><span class="word_setting"></span></button>
+                <!--<button class="help" onClick=""><span class="word_refresh"></span></button>-->
+                <button class="muti_pop" onClick="muti_op(4)"><span class="word_monitor_muti"></span></button>
+                <button class="translate" id="main_translate_event" onClick="play_init('translate','event')"><span class="word_monitor_translate_event"></span></button>
+                <button class="translate" id="main_translate_watch" onClick="play_init('translate','watch')"><span class="word_monitor_translate_watch"></span></button>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>	
+  </div>
+  
+  <!--底部-->
+  <div style="clear:both"></div>
+  <div class="footer"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	//初始化语言
+	language();
+	
+	//初始化按钮
+	button_init();
+	
+	//初始化权限
+	right_init();
+
+	//获得设备树
+	get_monitor_tree();
+	
+	//初始化播放
+	play_init();
+});
+
+//刷新设备树
+window.setInterval(get_monitor_tree,60000);
+
+//获取bunne信息
+window.setInterval(get_banner_state,1000);
+function get_banner_state(){
+	$.getJSON("../index.php?do=ajax&view=console&op=get_banner_state",function(banner_state){
+		$("#datetime").html(banner_state.datetime);//获取服务器时间														
+		$("#version").html(banner_state.version);//版本
+		if(banner_state.state==1){
+			$("#state").html("<font color=green>"+word['word_running']+"</font>");//运行状态
+		}else{
+			$("#state").html("<font color=red>"+word['word_closed']+"</font>");//运行状态
+		}
+		$(".footer").html(banner_state.footer_word);
+	});
+}
+
+
+//按钮初始化
+function button_init(){
+	$("button").button();
+	
+	//播放
+	$(".play").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-play"
+		}
+	});
+	
+	//停止
+	$(".stop").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-stop"
+		}
+	});
+	
+	//多路查看
+	$(".muti_pop").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-extlink"
+		}
+	});
+	
+	//开始录像按钮
+	$(".start").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-bullet"
+		}
+	});
+	
+	//删除
+	$(".delete").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-trash"
+		}
+	});
+	
+	//计划
+	$(".plan").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-clock"
+		}
+	});
+	
+	//设置
+	$(".setting").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-gear"
+		}
+	});
+	
+	//刷新
+	$(".refresh").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-arrowrefresh-1-s"
+		}
+	});
+	
+	//用户
+	$(".user").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-person"
+		}
+	});
+	
+	//帮助
+	$(".help").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-help"
+		}
+	});
+	
+	//切换
+	$(".translate").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-newwin"
+		}
+	});
+	
+	
+	
+	
+	//录像控制台
+	$(".toggle").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-eject"
+		}
+	});
+	$(".prev").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-seek-first"
+		}
+	});
+	$(".slow").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-seek-prev"
+		}
+	});
+	$(".fast").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-seek-next"
+		}
+	});
+	$(".next").button({
+		text: false,
+		icons: {
+			primary: "ui-icon-seek-end"
+		}
+	});
+	
+	
+	$("#main_event_toggle").click(function(){
+		main_iframe.event_kb("toggle");
+	});
+	$("#main_event_prev").click(function(){
+		main_iframe.event_kb("prev");
+	});
+	$("#main_event_slow").click(function(){
+		main_iframe.event_kb("slow");
+	});
+	$("#main_event_stop").click(function(){
+		main_iframe.event_kb("stop");
+	});
+	$("#main_event_fast").click(function(){
+		main_iframe.event_kb("fast");
+	});
+	$("#main_event_next").click(function(){
+		main_iframe.event_kb("next");
+	});
+	
+	
+	
+	
+	//云台开关
+	/*$("#ptz_power").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-power"
+		}
+	});*/
+	
+	//光圈开关
+	/*$("#ptz_iris").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-lightbulb"
+		}
+	});*/
+	
+	//自动巡航
+	/*$("#ptz_auto").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-refresh"
+		}
+	});*/
+	$("#ptz_auto_on").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-check"
+		}
+	});
+	$("#ptz_auto_off").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-close"
+		}
+	});
+
+	//焦距
+	/*$("#ptz_focus_in").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-minus"
+		}
+	});
+	$("#ptz_focus_out").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-plus"
+		}
+	});*/
+	
+	//视角
+	$("#ptz_zoom_in").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-minus"
+		}
+	});
+	$("#ptz_zoom_out").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-plus"
+		}
+	});
+	//云台控制左上
+	$("#ptz_leftup").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-arrowthick-1-nw"
+		}
+	});
+	
+	//云台控制上
+	$("#ptz_up").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-arrowthick-1-n"
+		}
+	});
+	
+	//云台控制右上
+	$("#ptz_rightup").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-arrowthick-1-ne"
+		}
+	});
+	
+	//云台控制左
+	$("#ptz_left").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-arrowthick-1-w"
+		}
+	});
+	
+	//云台控制复位
+	$("#ptz_home").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-radio-off"
+		}
+	});
+	
+	//云台控制右
+	$("#ptz_right").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-arrowthick-1-e"
+		}
+	});
+	
+	//云台控制左下
+	$("#ptz_leftdown").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-arrowthick-1-sw"
+		}
+	});
+	
+	//云台控制下
+	$("#ptz_down").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-arrowthick-1-s"
+		}
+	});
+	
+	//云台控制右下
+	$("#ptz_rightdown").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-arrowthick-1-se"
+		}
+	});
+						
+	//设置预设点
+	$("#ptz_preset_set").button({
+		text: false,
+		icons: {
+			primary: "ui-icon ui-icon-pin-s"
+		}
+	});
+}
+
+//权限初始化
+function right_init(){
+	//获得session中的用户信息，进行权限操作
+	$.getJSON("index.php?do=ajax&view=console&op=get_user",function(user){
+		//banner
+		$("#username").html("<a href=javascript:; onclick=user_edit("+user['Id']+")>"+user['Username']+"</a>");
+		
+		//其他页面根据这些隐藏域的值进行权限判断
+		$("#session_uid").val(user['Id']);
+		$("#session_watch").val(user['Watch_right']);//*
+		$("#session_event").val(user['Event_right']);//*
+		$("#session_ptz").val(user['Ptz_right']);//*
+		$("#session_group").val(user['Group_right']);
+		$("#session_monitor_modify").val(user['Monitor_modify_right']);
+		$("#session_monitor_control").val(user['Monitor_control_right']);//*
+		$("#session_event_del").val(user['Event_del_right']);
+		$("#session_event_download").val(user['Event_download_right']);
+		$("#session_log").val(user['Log_right']);
+		$("#session_plan").val(user['Plan_right']);
+		
+		//本页权限控制
+		if(user['Watch_right']!=1&&user['Event_right']!=1){
+			$(".muti_pop").attr("onclick","alert('"+word['word_no_right']+"')");
+		}
+		if(user['Ptz_right']!=1){
+			$("#main_ptz").html(word['word_no_right']);
+		}
+		if(user['Monitor_modify_right']!=1){
+			$("#main_delete").attr("onclick","alert('"+word['word_no_right']+"')");
+			$("#main_plan").attr("onclick","alert('"+word['word_no_right']+"')");
+		}
+		if(user['Monitor_control_right']!=1){
+			$("#main_record_stop").attr("onclick","alert('"+word['word_no_right']+"')");
+			$("#main_record_start").attr("onclick","alert('"+word['word_no_right']+"')");
+		}
+	});
+}
+
+//框架高度（比例）初始化
+function ratio_init(muti,hide_bar,play_type){
+	//$("body").css("width",1500);
+	//根据用户屏幕获取iframe高度
+	var iframe_height=switch_screen("iframe_height")+15;
+	
+	//如果有状态栏则加上状态栏的高度
+	if(!hide_bar){
+		iframe_height+=22*muti;
+	}
+	var side_height=iframe_height-20;//两侧高度减标题栏20
+	
+	//如果是录像则两侧+50，为了录像控制台
+	if(play_type=="event"){
+		side_height+=50;
+	}
+	
+	//执行赋值
+	$("#main_iframe").css("height",iframe_height);
+	$(".right_main").css("height",side_height);
+	$(".left_main").css("height",side_height);
+	
+	//返回iframe高度
+	return iframe_height;
+}
+
+//播放初始化
+function play_init(toggle,val){
+	var src="index.php?do=ajax&view=monitor_list&op=monitor_iframe";
+	
+	//初始化播放类型
+	if(toggle=="translate"){
+		var play_type=val;
+		setCookie("play_type",play_type,30);
+	}else{
+		if(getCookie("play_type")){
+			var play_type=getCookie("play_type");
+		}else{
+			var play_type="watch";
+		}
+	}
+	if(play_type=="watch"){
+		$(".main_turn").show();
+		$(".main_timepart").hide();
+		$("#main_console").hide();
+		$("#main_event_list_header").hide();
+		$("#main_event_list").hide();
+		$("#main_ptz_header").show();
+		$("#main_ptz").show();
+		$("#main_translate_watch").hide();
+		$("#main_translate_event").show();
+		
+		ptz_reload();
+		
+		//播放权限
+		if(toggle=="beto"&&$("#session_watch").val()!=1){
+			alert(word['word_no_right']);
+			return false;
+		}
+	}else{
+		$(".main_turn").hide();
+		$(".main_timepart").show();
+		$("#main_console").show();
+		$("#main_event_list_header").show();
+		$("#main_event_list").show();
+		$("#main_ptz_header").hide();
+		$("#main_ptz").hide();
+		$("#main_translate_watch").show();
+		$("#main_translate_event").hide();
+		
+		//播放权限
+		if(toggle=="beto"&&$("#session_event").val()!=1){
+			alert(word['word_no_right']);
+			return false;
+		}
+	}
+	src+="&type="+play_type;
+	
+	//初始化路数
+	if(toggle){
+		var muti=$("#main_muti").val();
+		setCookie("main_muti",muti,30);
+	}else{
+		if(getCookie("main_muti")){
+			var muti=getCookie("main_muti");
+			$("#main_muti_"+muti).attr("selected",true);
+		}else{
+			var muti=$("#main_muti").val();
+		}
+	}
+	src+="&muti="+muti;
+	
+	//初始化mid
+	if(toggle){
+		var zTree = $.fn.zTree.getZTreeObj("fee_tree");
+		var checked_nodes = zTree.getCheckedNodes(true);
+		
+		if(checked_nodes.length!=0){
+			var mid_arr=new Array();
+			for(i in checked_nodes){
+				if(checked_nodes[i].mid){
+					mid_arr.push(checked_nodes[i].mid);
+				}
+			}
+			var mid_str=mid_arr.join(",");
+			setCookie("mid_str",mid_str,30);
+		}else{
+			var mid_str=0;
+			setCookie("mid_str",mid_str,-30);
+		}
+		
+		if(toggle=="beto"&&val=="stop"){
+			var mid_str=0;
+		}
+		
+		if($("#main_auto_play").attr("checked")){
+			setCookie("main_auto_play",1,30)
+		}else{
+			if(!toggle||toggle!="beto"){
+				var mid_str=0;
+			}
+			setCookie("main_auto_play",1,-30)
+		}
+	}else{
+		if(getCookie("mid_str")){
+			var mid_str=getCookie("mid_str");
+		}else{
+			var mid_str=0;
+		}
+			
+		if(getCookie("main_auto_play")){	
+			$("#main_auto_play").attr("checked",true);
+		}else{
+			var mid_str=0;
+			$("#main_auto_play").attr("checked",false)
+		}
+	}
+	src+="&mid_str="+mid_str;
+	
+	//初始化状态栏
+	if(toggle){
+		if($("#main_hide_bar").attr("checked")){
+			var hide_bar=0;
+			setCookie("main_hide_bar",1,-30);
+		}else{
+			var hide_bar=1;
+			setCookie("main_hide_bar",1,30);
+		}
+	}else{
+		if(getCookie("main_hide_bar")){
+			var hide_bar=1;
+			$("#main_hide_bar").attr("checked",false);
+		}else{
+			var hide_bar=0;
+			$("#main_hide_bar").attr("checked",true);
+		}
+	}
+	src+="&hide_bar="+hide_bar;
+
+
+
+
+	//获取轮巡时间或开始结束时间
+	if(toggle){
+		//验证用户选择是否符合多路条件
+		if((!$("#main_turn").attr("checked")||play_type=="event")&&mid_str){
+			var mid_arr=mid_str.split(",");
+			switch(parseInt($("#main_muti").val())){
+				case 1:
+					if(mid_arr.length>1){
+						alert(word['word_monitor_turn_1']);
+						return false;
+					}
+				break;
+				
+				case 2:
+					if(mid_arr.length>4){
+						alert(word['word_monitor_turn_2']);
+						return false;
+					}
+				break;
+				
+				case 3:
+					if(mid_arr.length>9){
+						alert(word['word_monitor_turn_3']);
+						return false;
+					}
+				break;
+				
+				case 4:
+					if(mid_arr.length>16){
+						alert(word['word_monitor_turn_4']);
+						return false;
+					}
+				break;
+				
+				case 5:
+					if(mid_arr.length>25){
+						alert(word['word_monitor_turn_5']);
+						return false;
+					}
+				break;
+			}
+		}
+	}
+
+	if(play_type=="watch"){
+		//实时
+		$("#main_turn_minute").change(function(){
+			var minute=document.getElementById('main_turn_minute');
+			var second=document.getElementById('main_turn_second');
+			second.options.length=0;
+			if(parseInt(minute.value)>0){
+				if(parseInt(minute.value)==10){
+					second.options[second.length]=new Option(0,0);
+				}else{
+					for(var i=0;i<60;i++){
+						second.options[second.length]=new Option(i,i);
+					}
+				}
+			}else{
+				var muti=parseInt($("#muti").val());
+				var min_turn=get_min_turn_operator(muti);//获得最小轮巡时间
+				for(var i=min_turn;i<60;i++){
+					second.options[second.length]=new Option(i,i);
+				}
+			}
+		});
+		$("#main_muti").change(function(){
+			var minute=document.getElementById('main_turn_minute');
+			var second=document.getElementById('main_turn_second');
+			second.options.length=0;
+			if(parseInt(minute.value)>0){
+				if(parseInt(minute.value)==10){
+					second.options[second.length]=new Option(0,0);
+				}else{
+					for(var i=0;i<60;i++){
+						second.options[second.length]=new Option(i,i);
+					}
+				}
+			}else{
+				var muti=parseInt($(this).val());
+				var min_turn=get_min_turn_operator(muti);//获得最小轮巡时间
+				for(var i=min_turn;i<60;i++){
+					second.options[second.length]=new Option(i,i);
+				}
+			}
+									 
+		});							 
+		$("#main_turn").click(function(){
+			if($("#main_turn").attr("checked")){
+				$("#main_turn_minute").attr("disabled",false);
+				$("#main_turn_second").attr("disabled",false);
+			}else{
+				$("#main_turn_minute").attr("disabled",true);
+				$("#main_turn_second").attr("disabled",true);
+			}
+		});
+		
+		if(toggle){
+			if($("#main_turn").attr("checked")){
+				setCookie("main_turn",1,30);
+			}else{
+				setCookie("main_turn",1,-30);
+			}
+			setCookie("main_turn_minute",$("#main_turn_minute").val(),30);
+			setCookie("main_turn_second",$("#main_turn_second").val(),30);
+			
+			var turn_time=(parseInt($("#main_turn_minute").val())*60+parseInt($("#main_turn_second").val()))*1000;
+		}else{
+			if(getCookie("main_turn")){
+				$("#main_turn").attr("checked",true);
+				$("#main_turn_minute").attr("disabled",false);
+				$("#main_turn_second").attr("disabled",false);
+			}else{
+				$("#main_turn").attr("checked",false);
+				$("#main_turn_minute").attr("disabled",true);
+				$("#main_turn_second").attr("disabled",true);
+			}
+			
+			if(getCookie("main_turn_minute")){
+				var main_turn_minute=getCookie("main_turn_minute");
+			}else{
+				var main_turn_minute=0;
+			}
+			
+			if(getCookie("main_turn_second")){
+				var main_turn_second=getCookie("main_turn_second");
+			}else{
+				var main_turn_second=20;
+			}
+			
+			//获取时间
+			var minute=document.getElementById('main_turn_minute');
+			var second=document.getElementById('main_turn_second');
+			minute.options.length=0;
+			second.options.length=0;
+			for(var i=0;i<=10;i++){
+				minute.options[minute.length]=new Option(i,i);
+				if(i==main_turn_minute){
+					minute.options[i].selected=true;
+				}
+			}
+			for(var i=0;i<60;i++){
+				second.options[second.length]=new Option(i,i);
+				if(i==main_turn_second){
+					second.options[i].selected=true;
+				}
+				second.options[i].id="main_turn_second_"+i;
+			}
+			if($("#main_turn_minute").val()==0){
+				var min_turn=get_min_turn_operator();//获得最小轮巡时间
+				for(var i=0;i<min_turn;i++){
+					$("#main_turn_second_"+i).remove();
+				}
+			}
+			
+			var turn_time=(parseInt(main_turn_minute)*60+parseInt(main_turn_second))*1000;
+		}
+		src+="&turn_time="+turn_time;
+	}else{
+		//录像观看
+		if(toggle){
+			//验证时间段
+			if($("#main_start_time").val()&&$("#main_end_time").val()){
+				if(!validate_timepart($("#main_start_time").val(),$("#main_end_time").val())){
+					return false;
+				}
+			}
+			
+			if($("#main_start_time").val()){
+				var start_time=$("#main_start_time").val();
+				setCookie("main_start_time",$("#main_start_time").val(),30);
+			}else{
+				setCookie("main_start_time",$("#main_start_time").val(),-30);
+			}
+			if($("#main_end_time").val()){
+				var end_time=$("#main_end_time").val();
+				setCookie("main_end_time",$("#main_end_time").val(),30);
+			}else{
+				setCookie("main_end_time",$("#main_end_time").val(),30);
+			}
+		}else{
+			if(getCookie("main_start_time")){
+				var start_time=getCookie("main_start_time");
+				$("#main_start_time").val(getCookie("main_start_time"));
+			}else{
+				$("#main_start_time").val("");
+			}
+			if(getCookie("main_end_time")){
+				var end_time=getCookie("main_end_time");
+				$("#main_end_time").val(getCookie("main_end_time"));
+			}else{
+				$("#main_end_time").val("");
+			}
+		}
+		
+		if(start_time){
+			src+="&start_time="+$("#main_start_time").val();
+		}
+		if(end_time){
+			src+="&end_time="+$("#main_end_time").val();
+		}
+	}
+	
+	//获取录像列表
+	if(play_type=="event"){
+		var event_url="index.php?do=ajax&view=monitor_list&op=get_operator_event_list&mid_str="+mid_str;
+		if(start_time){
+			event_url+="&start_time="+$("#main_start_time").val();
+		}
+		if(end_time){
+			event_url+="&end_time="+$("#main_end_time").val();
+		}
+		$.getJSON(event_url,function(event_arr){
+			var event_list="";	
+			if(event_arr.length>0){
+				for(i in event_arr){
+					event_list+="<tr><th style=background:#ccc>"+event_arr[i]['mname']+"</th></tr>";
+					if(event_arr[i]['file']){
+						for(j in event_arr[i]['file']){
+							event_list+="<tr onmousemove='move_color(this)' onmouseout='out_color(this)'><td>"+event_arr[i]['file'][j]+"</td></tr>";
+						}
+					}else{
+						event_list+="<tr><td align='center'>"+word['word_none']+"</td></tr>";
+					}
+				}
+				$("#main_event_list_table").css("width","115%");
+			}else{
+				event_list+="<tr><td align='center'>"+word['word_none']+"</td></tr>";
+				$("#main_event_list_table").css("width","100%");
+			}
+			$("#main_event_list_table").html(event_list);
+		});
+	}
+
+	//获取弹出宽
+	src+="&pop_width="+switch_screen("pop_width");
+	
+	//获取vlc宽
+	src+="&vlc_width="+switch_screen("vlc_width");
+	
+	//初始化框架高度（比例）
+	src+="&operator="+ratio_init(muti,hide_bar,play_type);
+	
+	//将参数传给iframe
+	$("#main_iframe").attr("src",src);
+}
+
+//验证时间段
+function validate_timepart(main_start_time,main_end_time){
+	var start_arr=main_start_time.split(" ");
+	var start_date=start_arr[0].split("-");
+	var start_time=start_arr[1].split(":");
+	var start_utc=Date.UTC(start_date[0],start_date[1],start_date[2],start_time[0],start_time[1],start_time[2]);
+	
+	var end_arr=main_end_time.split(" ");
+	var end_date=end_arr[0].split("-");
+	var end_time=end_arr[1].split(":");
+	var end_utc=Date.UTC(end_date[0],end_date[1],end_date[2],end_time[0],end_time[1],end_time[2]);
+	
+	if(start_utc>=end_utc){
+		alert(word['word_system_end_start_day']);
+		return false;
+	}else{
+		return true;
+	}
+}
+	
+
+
+
+//获取树
+function get_monitor_tree(){
+	var monitor_arrs=$.ajax({url:"index.php?do=ajax&view=monitor_list&op=get_monitor_tree",async:false});
+	var setting = {
+		check: {
+			enable: true
+		},
+		callback: {
+			/*onCheck: OnCheck,
+			onClick: OnClick,*/
+			onRightClick: OnRightClick
+		}
+	};
+	var zNodes=eval("("+monitor_arrs.responseText+")");
+	$.fn.zTree.init($("#fee_tree"), setting, zNodes);
+}
+
+
+//右键树
+function OnRightClick(event, treeId, treeNode) {
+	var zTree = $.fn.zTree.getZTreeObj("fee_tree");
+	zTree.selectNode(treeNode);
+	
+	if(treeNode){
+		var type;
+		if(treeNode.gid){
+			type="group";
+			
+			if(treeNode.gid==1){
+				$(".r_group_monitor_add").hide();
+				$(".r_group_monitor_remove").hide();
+				$(".r_group_delete").hide();
+			}else{
+				$(".r_group_monitor_add").show();
+				$(".r_group_monitor_remove").show();
+				$(".r_group_delete").show();
+			}
+			
+			$("#r_group_add").attr("href","javascript:group_op('add',"+treeNode.gid+")");//右键添加前端设备
+			$("#r_group_remove").attr("href","javascript:group_op('remove',"+treeNode.gid+")");//右键移除前端设备
+			$("#r_group_edit").attr("href","javascript:group_op('edit',"+treeNode.gid+",'"+treeNode.name+"',"+treeNode.plan_id+")");//右键修改组
+			//右键删除组
+			if(treeNode.is_record){
+				$("#r_group_del").attr("href","javascript:alert('"+word['word_monitor_stop_record_please']+"')");
+			}else if(treeNode.is_mount==1){
+				$("#r_group_del").attr("href","javascript:alert('"+word['word_monitor_delete_mount_please']+"')");
+			}else{
+				$("#r_group_del").attr("href","javascript:group_op('del',"+treeNode.gid+")");
+			}
+			
+			//权限
+			if($("#session_group").val()!=1){
+				return false;
+			}
+		}else if(treeNode.mid){
+			type="monitor";
+			
+			if(treeNode.icon=="../images/ps11.gif"){
+				$(".r_monitor_record_start").hide();
+				$(".r_monitor_record_stop").show();
+			}else{
+				$(".r_monitor_record_start").show();
+				$(".r_monitor_record_stop").hide();
+			}
+			
+			$("#r_monitor_watch").attr("href","javascript:monitor_pop('watch',1,"+treeNode.mid+",'"+treeNode.name+"')");//右键实时
+			$("#r_monitor_record_start").attr("href","javascript:monitor_op(0,"+treeNode.mid+")");//右键前端设备开始录像
+			$("#r_monitor_record_stop").attr("href","javascript:monitor_op(1,"+treeNode.mid+")");//右键前端设备停止录像
+			$("#r_monitor_event_list").attr("href","javascript:event_list("+treeNode.mid+",'"+treeNode.name+"')");//右键录像列表
+			$("#r_monitor_delete").attr("href","javascript:monitor_op(2,"+treeNode.mid+")");//右键前端设备删除
+			$("#r_monitor_edit").attr("href","javascript:monitor_op(3,"+treeNode.mid+")");//右键前端设备修改
+			
+			//权限
+			if($("#session_watch").val()!=1){
+				$(".r_monitor_watch").hide();
+			}
+			if($("#session_event").val()!=1){
+				$(".r_monitor_event_list").hide();
+			}
+			if($("#session_monitor_modify").val()!=1){
+				$(".r_monitor_delete").hide();
+				$(".r_monitor_edit").hide();
+			}
+			if($("#session_monitor_control").val()!=1){
+				$(".r_monitor_record_start").hide();
+				$(".r_monitor_record_stop").hide();
+			}
+		}else{
+			type="all";
+			
+			$("#r_group_creat").attr("href","javascript:group_op('creat')");//右键添加组
+			$("#r_monitor_creat").attr("href","javascript:pop_div(360,450,'"+word['word_monitor_creat']+"','monitor_creat')");//右键前端设备修改
+			$("#r_monitor_discover").attr("href","javascript:pop_div(800,600,'"+word['word_monitor_discover']+"','monitor_discover')");//右键前端设备修改
+			
+			//权限
+			if($("#session_group").val()!=1){
+				$(".r_group_creat").hide();
+			}
+			if($("#session_monitor_modify").val()!=1){
+				$(".r_monitor_creat").hide();
+				$(".r_monitor_discover").hide();
+			}
+		}
+		
+		$("#r_"+type).css({"top":event.clientY+"px", "left":event.clientX+"px"});
+		$("#r_"+type).show();
+		$("body").bind("mousedown", hideRMenu);
+	}
+}
+
+//关闭右键菜单
+function hideRMenu(event) {
+	if(event.target&&event.target.offsetParent&&event.target.offsetParent.offsetParent&&event.target.offsetParent.offsetParent.offsetParent&&event.target.offsetParent.offsetParent.offsetParent.className!="r_menu"){
+		$(".r_menu").hide();
+		var zTree = $.fn.zTree.getZTreeObj("fee_tree");
+		zTree.cancelSelectedNode();
+	}
+}
+
+
+//组操作
+function group_op(op,gid,gname,plan_id){
+	switch(op){
+		case "creat":
+			pop_div(350,530,word['word_monitor_group_add'],"monitor_group_creat");
+		break;
+		
+		case "add":
+			$("#main").append("<input type='hidden' id='edit_gid' value='"+gid+"' />");
+			pop_div(350,480,word['word_monitor_group_monitor_add'],"monitor_group_add");
+		break;
+		
+		case "remove":
+			$("#main").append("<input type='hidden' id='edit_gid' value='"+gid+"' />");
+			pop_div(350,480,word['word_monitor_group_monitor_remove'],"monitor_group_remove");
+		break;
+		
+		case "edit":
+			$("#main").append("<input type='hidden' id='edit_gid' value='"+gid+"' />");
+			$("#main").append("<input type='hidden' id='edit_gname' value='"+gname+"' />");
+			$("#main").append("<input type='hidden' id='edit_plan_id' value='"+plan_id+"' />");
+			pop_div(300,200,word['word_monitor_group_edit'],"monitor_group_edit");
+		break;
+		
+		case "del":
+			if(confirm(word['word_monitor_group_del_confirm'])){
+				$.ajax({url:"index.php?do=ajax&view=monitor_group&op=group_del&gid="+gid,async:false});
+				$(".r_menu").hide();
+				get_monitor_tree();
+			}
+		break;
+		
+		default:
+		break;
+	}
+}
+
+//批量操作
+function muti_op(op){
+	var zTree = $.fn.zTree.getZTreeObj("fee_tree");
+	var checked_nodes = zTree.getCheckedNodes(true);
+	
+	if(checked_nodes.length==0){
+		alert(word['word_monitor_choose']);
+		return false;
+	}
+	var mid_arr=new Array();
+	var mid_ser_arr=new Array();
+	for(i in checked_nodes){
+		if(checked_nodes[i].mid){
+			mid_arr.push(checked_nodes[i].mid);
+			mid_ser_arr.push("markMids[]="+checked_nodes[i].mid);
+		}
+	}
+	var mid_str=mid_arr.join(",");
+	var mid_ser_str=mid_ser_arr.join("&");
+	setCookie("mid_str",mid_str,30);
+	
+	monitor_op(op,mid_ser_str,"muti");
+}
+
+
+//监视器操作
+function monitor_op(op,mid,type,other,position){
+	switch(op){
+		//监视器开始录像
+		case 0:
+		  iframe_toggle("stop");	
+		  var conf=word['word_monitor_control_confirm_0'];
+		break;
+		
+		//监视器停止录像
+		case 1:
+		  iframe_toggle("stop");
+		  var conf=word['word_monitor_control_confirm_1'];
+		break;
+		
+		//删除监视器
+		case 2:
+		  iframe_toggle("stop");
+		  var conf=word['word_monitor_control_confirm_2'];
+		break;
+		
+		//修改监视器跳出
+		case 3:
+		  $("#main").append("<input type='hidden' id='edit_mid' value='"+mid+"' />");
+		  pop_div(360,450,word['word_monitor_edit'],"monitor_edit",position);
+		break;
+		
+		//多路查看跳出
+		case 4:
+		  pop_div(330,430,word['word_monitor_muti'],"monitor_muti");
+		break;
+		
+		//工作日录像
+		case 5:
+		  pop_div(320,150,word['word_monitor_event_plan'],"monitor_plan");
+		break;
+	}
+	
+	//0,1,2才走到这一步：发送操作请求
+	if(conf&&confirm(conf)){
+		if(type=="muti"){
+			var mid_str=mid;
+		}else{
+			var mid_str="markMids[]="+mid;
+		}
+		$.post("index.php?do=ajax&view=monitor_list&op=monitor_control&control="+op,mid_str,function(backinfo){
+			if(backinfo){																									 
+				alert(backinfo);
+			}
+		});
+		
+		iframe_toggle("start");
+		$(".r_menu").hide();
+		get_monitor_tree();
+		
+		if(other){
+			return true;
+		}
+	}else{
+		if(other){
+			return false;
+		}
+	}
+}
+
+//录像列表
+function event_list(mid,mname,start_time,end_time){
+	var url=encodeURI("index.php?do=ajax&view=monitor_list&op=get_event_list&mid="+mid+"&mname="+mname);
+		
+	$("#main").append("<input type='hidden' id='events_list_mid' value='"+mid+"' />");
+	$("#main").append("<input type='hidden' id='events_list_mname' value='"+mname+"' />");
+	$("#main").append("<input type='hidden' id='events_list_url' value='"+url+"' />");
+	
+	pop_div(820,450,word['word_monitor_event_list']+" - "+mname,"monitor_events_list");
+}
+
+
+//实时和录像播放（包括单路和多路）
+function monitor_pop(type,muti,mid_str,mname){
+	var url="index.php?do=ajax&view=monitor_list&op=monitor_iframe&type="+type+"&muti="+muti+"&mid_str="+mid_str+"&width_fix="+$("#width_fix").val()+"&height_fix="+$("#height_fix").val();
+	
+	if(!$("#hide_bar").attr("checked")){
+		url+="&hide_bar=1";
+	}else{
+		url+="&hide_bar=0";
+	}
+
+	if($("#turn_time").val()){
+		url+="&turn_time="+$("#turn_time").val();
+	}
+	
+	if($("#eid_str").val()){
+		url+="&eid_str="+$("#eid_str").val();
+	}
+	
+	if($("#start_time").val()){
+		url+="&start_time="+$("#start_time").val();
+	}
+	
+	if($("#end_time").val()){
+		url+="&end_time="+$("#end_time").val();
+	}
+	
+	var pop_width=switch_screen("pop_width");
+	var vlc_width=switch_screen("vlc_width");
+	url+="&pop_width="+pop_width+"&vlc_width="+vlc_width;
+	
+	//如果是单路就是弹出层，如果是多路就是弹出窗口
+	if(muti==1||!muti){
+		$("#main").append("<input type='hidden' id='frame_src' value='"+url+"' />");//将iframe请求路径置入隐藏域传给弹出层
+		
+		if(type=="watch"){
+			var title=word['word_monitor_watch']+" - "+mname;
+		}else{
+			var title=word['word_monitor_event']+" - "+mname;
+		}
+		
+		pop_div(pop_width,600,title,"monitor_pop");	
+	}else{
+		var time=new Date().getTime();//获取随机时间
+		window.open(url,"muti"+time,"resizable=yes,scrollbars=yes,fullscreen=yes");
+	}
+}
+
+
+
+
+
+
+//根据用户屏幕和需要获取尺寸
+function switch_screen(size){
+	var pop_width;
+	var vlc_width;
+	var iframe_height;
+	
+	//根据客户端显示器分辨率的宽来判断弹出层的宽；弹出层高是固定的，不同的弹出层宽度决定不同的比例
+	switch(screen.width){
+		//适用于1024*768的15或17英寸的比例为4:3的CRT显示器
+		case 1024:
+			pop_width=852;
+			vlc_width=600;
+			iframe_height=480;
+		break;
+		
+		case 1152:
+			pop_width=852;
+			vlc_width=600;
+			iframe_height=480;
+		break;
+		
+		case 1280:
+			pop_width=852;
+			vlc_width=600;
+			iframe_height=480;
+		break;
+		
+		//适用于1440*900的19英寸和1680*1050的22英寸的比例为16:10的液晶显示器
+		case 1440:
+			pop_width=972;
+			vlc_width=720;
+			iframe_height=400;
+		break;
+		
+		case 1680:
+			pop_width=972;
+			vlc_width=720;
+			iframe_height=400;
+		break;
+		
+		//适用于1366*768的笔记本，1920*1080的21.5,23英寸和2560*1440的27英寸的比例为16:9液晶屏
+		case 1366:
+			pop_width=1052;
+			vlc_width=800;
+			iframe_height=360;
+		break;
+		
+		case 1920:
+			pop_width=1052;
+			vlc_width=800;
+			iframe_height=360;
+		break;
+
+		case 2560:
+			pop_width=1052;
+			vlc_width=800;
+			iframe_height=360;
+		break;
+
+		default:
+			/*pop_width=1052;
+			vlc_width=800;
+			iframe_height=360;
+			alert(word['word_monitor_resolution_error']);*/
+			$("#main").html(word['word_monitor_resolution_error']);
+		break;
+	}
+	
+	//返回需要的值
+	switch(size){
+		case "pop_width":
+			return pop_width;
+		break;
+		
+		case "vlc_width":
+			return vlc_width;
+		break;
+		
+		case "iframe_height":
+			return iframe_height;
+		break;
+		
+		default:
+		break;
+	}
+}
+
+//登出
+function user_logout(){
+	if(confirm(word['word_confirm_exit'])){		
+		$.ajax({url:"index.php?do=ajax&view=user_login",async:false});
+		window.location.reload();
+	}
+}
+
+//iframe开关
+function iframe_toggle(op){
+	if(op=="stop"){
+		$("#main_iframe_src").val($("#main_iframe").attr("src"));
+		$("#main_iframe").attr("src","");
+	}else{
+		$("#main_iframe").attr("src",$("#main_iframe_src").val());
+		$("#main_iframe_src").val("");
+	}
+}
+
+//获得最小轮巡时间
+function get_min_turn_operator(muti){
+	if(!muti){
+		if(getCookie("main_muti")){
+			muti=parseInt(getCookie("main_muti"));
+		}else{
+			muti=1;
+		}
+	}
+	
+	var min_turn;
+	switch(muti){
+		case 1:
+		  min_turn=10;
+		break;
+		
+		case 2:
+		  min_turn=20;
+		break;
+		
+		case 3:
+		  min_turn=30;
+		break;
+		
+		case 4:
+		  min_turn=40;
+		break;
+		
+		case 5:
+		  min_turn=50;
+		break;
+		
+		default:
+		  min_turn=50;
+		break;
+	}
+	
+	return min_turn;
+}
+
+//iframe返回播放中的录像
+function playing_event(k,play_key,num){
+	for(var i=0;i<num;i++){
+		$("#main_event_name_"+k+"_"+i).css("color","#7F7FB2");
+		$("#main_event_name_"+k+"_"+i).css("text-decoration","none");
+	}
+	$("#main_event_name_"+k+"_"+play_key).css("color","#00B6EF");
+	$("#main_event_name_"+k+"_"+play_key).css("text-decoration","underline");
+}
+
+//iframe返回播放中的时间
+function playing_time(event_time,file_time){
+	if(event_time&&file_time){
+		$("#main_event_time").html(event_time);
+		$("#main_file_time").html(file_time);
+	}else{
+		$("#main_event_time").html("XXXX-XX-XX --:--:--");
+		$("#main_file_time").html("--:--/--:--");
+	}
+}
+
+//iframe返回列表跳转
+function playing_scroll(k){
+	var top=Number($("#scrolltop_"+k).val())-10;
+	$("#main_event_list").scrollTop(top);
+}
+
+//iframe返回云台操作日志
+function ptz_log(control,ptz_log,st){
+	/*if(control=="auto"){
+		var ptz_log_arr=ptz_log.split("&nbsp;");
+		$("#ptz_auto_state").html(ptz_log_arr[1]);
+	}
+	if(control=="iris"){
+		var ptz_log_arr=ptz_log.split("&nbsp;");
+		$("#ptz_iris_state").html(ptz_log_arr[1]);
+	}*/
+	if(control!="preset"){
+		$("#preset_none").attr("selected",true);
+	}
+	if(ptz_log){
+		$("#ptz_log").append(ptz_log+"<br>");
+		$("#ptz_log").scrollTop(st);
+	}
+}
+
+//iframe选择框返回云台初始化命令
+function ptz_init(mid,ptz_path,ptz_function,/*ptz_auto,ptz_iris,*/ptz_speed,ptz_preset){
+	ptz_reload();
+	
+	if(mid==-1){
+		$("#main_ptz").show();
+		$("#main_ptz_none").hide();
+	}else{
+		if(ptz_path&&ptz_function){
+			$("#main_ptz").show();
+			$("#main_ptz_none").hide();
+			
+			//巡航
+			/*if(Number(ptz_auto)==1){
+				$("#ptz_auto_state").html("<font color=green>开</font>");
+			}else{
+				$("#ptz_auto_state").html("<font color=red>关</font>");
+			}*/
+			
+			//光圈
+			/*if(Number(ptz_iris)==1){
+				$("#ptz_iris_state").html("<font color=green>开</font>");
+			}else{
+				$("#ptz_iris_state").html("<font color=red>关</font>");
+			}*/
+			
+			//云台功能判断
+			var ptz_function_arr=ptz_function.split("");
+			//↑↓←→
+			if(Number(ptz_function_arr[0])==0){
+				$("#ptz_left").hide();
+				$("#ptz_right").hide();
+				$("#ptz_down").hide();
+				$("#ptz_up").hide();
+			}else{
+				$("#ptz_left").show();
+				$("#ptz_right").show();
+				$("#ptz_down").show();
+				$("#ptz_up").show();
+			}
+			//↖↙↗↘
+			if(Number(ptz_function_arr[1])==0){
+				$("#ptz_leftup").hide();
+				$("#ptz_rightup").hide();
+				$("#ptz_leftdown").hide();
+				$("#ptz_rightdown").hide();
+			}else{
+				$("#ptz_leftup").show();
+				$("#ptz_rightup").show();
+				$("#ptz_leftdown").show();
+				$("#ptz_rightdown").show();
+			}
+			//视角
+			if(Number(ptz_function_arr[2])==0){
+				$(".ptz_zoom").hide();
+			}else{
+				$(".ptz_zoom").show();
+			}
+			//焦距
+			/*if(Number(ptz_function_arr[3])==0){
+				$(".ptz_focus").hide();
+			}else{
+				$(".ptz_focus").show();
+			}*/
+			//巡航
+			/*if(Number(ptz_function_arr[4])==0){
+				$(".ptz_auto").hide();
+			}else{
+				$(".ptz_auto").show();
+			}*/
+			//光圈
+			/*if(Number(ptz_function_arr[4])==0){
+				$(".ptz_iris").hide();
+			}else{
+				$(".ptz_iris").show();
+			}*/
+			//预设点
+			if(Number(ptz_function_arr[5])==0){
+				$(".ptz_preset").hide();
+			}else{
+				$(".ptz_preset").show();
+			}
+			//复位
+			if(Number(ptz_function_arr[6])==0){
+				$("#ptz_home").hide();
+			}else{
+				$("#ptz_home").show();
+			}
+			
+			$("#ptz_speed_val_"+ptz_speed).attr("selected",true);
+			
+			//预设点
+			var ptz_preset_option="";
+			if(ptz_preset){
+				ptz_preset_option+="<option value=0 id='preset_none'>"+word['word_select']+"</option>";
+				ptz_preset=eval("("+ptz_preset+")");
+				for(i in ptz_preset){
+					ptz_preset_option+="<option value="+ptz_preset[i]['Preset']+">"+ptz_preset[i]['Name']+"</option>";
+				}
+			}else{
+				ptz_preset_option+="<option value=0>"+word['word_none']+"</option>";
+			}
+			$("#ptz_preset").html(ptz_preset_option);
+		}else{
+			$("#main_ptz").hide();
+			$("#main_ptz_none").show();
+		}
+	}
+}
+
+//重置云台
+function ptz_reload(){
+	//$("#ptz_auto_state").html("");
+	//$("#ptz_iris_state").html("");
+	
+	$("#ptz_left").show();
+	$("#ptz_right").show();
+	$("#ptz_down").show();
+	$("#ptz_up").show();
+
+	$("#ptz_leftup").show();
+	$("#ptz_rightup").show();
+	$("#ptz_leftdown").show();
+	$("#ptz_rightdown").show();
+
+	//$(".ptz_focus").show();
+	$(".ptz_preset").show();
+	//$(".ptz_auto").show();
+	//$(".ptz_iris").show();
+	$("#ptz_home").show();
+	
+	$("#ptz_speed_val_1").attr("selected",true);
+	$("#ptz_preset").html("<option value=0>"+word['word_none']+"</option>");
+	$('#ptz_log').empty();
+}
+
+//给iframe的ptz()返回速度
+function ptz_speed(){
+	return $("#ptz_speed").val();
+}
+
+//修改用户
+function user_edit(uid){
+	$("#main").append("<input type='hidden' id='edit_uid' value='"+uid+"' />");
+	pop_div(350,630,word['word_user_edit'],"user");
+}
+</script>

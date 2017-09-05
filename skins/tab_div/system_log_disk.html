@@ -1,0 +1,39 @@
+<div style="overflow-y:scroll; height:400px; width:730px;">
+  <!--内容-->
+  <table border="0" class="main_table">
+    <thead>
+      <tr>
+        <th width="40%"><a href="javascript:;"><span class="word_time">备份时间</span></a>&nbsp;<span id="file_Time"></span></th>
+        <th width="60%"><a href="javascript:;"><span class="word_system_event">文件名称</span></a>&nbsp;<span id="file_Name"></span></th>
+      </tr>
+    </thead>
+    <tbody id="disk_log_table"><tr><td colspan="2"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中，请稍候...</span></td></tr></tbody>
+  </table>
+</div>
+
+<!--操作-->
+<div class="main_op">
+  <button onClick="download_disk_log()"><span class="word_download">下载</span></button>
+  <button onClick="delete_disk_log()"><span class="word_delete">删除</span></button>
+</div>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	$("button").button();
+						   
+	get_table("disk_log","index.php?do=ajax&view=system_log&op=get_disk_log",word['word_none']);						   
+});
+
+function download_disk_log(){
+	window.location="index.php?do=ajax&view=system_log&op=download_disk_log";
+}
+
+function delete_disk_log(){
+	if(confirm(word['word_system_log_delete_confirm'])){
+		$.ajax({url:"index.php?do=ajax&view=system_log&op=delete_disk_log",async:false});
+		tab_load("system_log_disk");
+	}
+}
+</script>

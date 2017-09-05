@@ -1,0 +1,74 @@
+<div>
+  <form method="post" action="index.php?do=ajax&view=system_update" id="form_update" enctype="multipart/form-data">
+    <span class="word_system_update_file_please">请选择升级文件（.pak格式）</span>&nbsp;<input type="file" name="sys_update" id="sys_update" /><br><br><br>
+    <strong><span class="word_system_update_info">重要提示：升级操作有可能会造成数据丢失，升级前请备份重要数据。</span></strong>
+  </form>
+</div>
+
+<div class="main_op">
+  <!--<input type="button" value="确定" id="submit_update" />--><!--<input type="reset" value="重置" />-->
+  <button id="submit_update"><span class="word_accept">确定</span></button>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	$("button").button();
+	
+	$("#submit_update").click(function(){
+		if(confirm(word['word_system_update_confirm'])){
+			if($('#sys_update').val()){
+				var pak=$('#sys_update').val().split("pak");
+				if(pak[1]==""){
+					//当前版本
+					var ver_arr=$("#version").html().split("(");
+					var ver1=ver_arr[0];	
+					//要升级的版本
+					var update=pak[0].split("-");
+					var ver2=trim(update[1]);
+					//判断版本是否可以升级
+					if(is_update(ver1,ver2)){
+						$("#form_update").submit();
+					}else{
+						alert(word['word_system_cant_update']);
+						return false;
+					}
+				}else{
+					alert(word['word_system_pak_please']);
+					return false;
+				}
+			}else{
+				alert(word['word_system_update_file_please']);
+				return false;
+			}
+		}
+	});
+});
+
+//判断是否符合升级条件
+function is_update(ver1,ver2){
+	var ver1_arr=ver1.split(".");
+	var ver2_arr=ver2.split(".");
+	
+	//判断第一个版本号
+	if(ver1_arr[0]>ver2_arr[0]){
+		return false;
+	}else if(ver1_arr[0]<ver2_arr[0]){
+		return true;
+	}
+	//判断第二个版本号
+	if(ver1_arr[1]>ver2_arr[1]){
+		return false;
+	}else if(ver1_arr[1]<ver2_arr[1]){
+		return true;
+	}
+	//判断第三个版本号
+	if(ver1_arr[2]>=ver2_arr[2]){
+		return false;
+	}else{
+		return true;
+	}
+}
+</script>
+

@@ -1,0 +1,58 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*左侧*/
+.left_header{
+	width:100%; 
+	height:20px; 
+	color:#FFF;
+	padding-top:5px;
+	text-align:center; 
+	/*border:1px solid #000;*/
+	background: url(../images/ui-bg_glass_40_111111_1x400.png) repeat-x scroll 50% 50% transparent;
+}
+.left_main{
+	width:180px; 
+	/*height:395px;*/ 
+	/*border:1px solid #000;*/
+	float:left; 
+	overflow:scroll;
+}
+
+/*中间*/
+#main_console{
+	/*border-top:1px solid #ccc; */
+	/*display:none; */
+	width:100%; 
+	height:50px;
+}
+
+/*右侧*/
+.right_header{
+	width:100%; 
+	height:20px; 
+	color:#FFF;
+	padding-top:5px;
+	text-align:center; 
+	/*border:1px solid #000;*/
+	background: url(../images/ui-bg_glass_40_111111_1x400.png) repeat-x scroll 50% 50% transparent;
+}
+.right_main{
+	width:164px; 
+	/*height:395px; */
+	/*border:1px solid #000;*/
+	float:left;
+	/*overflow:scroll;*/
+}
+
+/*右键菜单*/
+.r_menu{
+	position:absolute; 
+	display:none; 
+	background-color:#000;
+	z-index:999;
+}
+.r_menu a{
+	color:#FFF
+}
+	

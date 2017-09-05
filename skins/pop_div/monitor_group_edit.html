@@ -1,0 +1,106 @@
+<!--修改组名称-->
+<div>
+  <form id="form_group_edit">
+    <input type="hidden" name="gname_yuan" id="gname_yuan" value="" />
+    <input type="hidden" name="edit_gid" id="edit_gid" value="" />
+    <table border="0">
+      <tr>
+        <td><span class="word_name">名称</span></td>
+        <td><input type="text" name="gname_fa" id="gname_fa" /></td>
+      </tr>
+      
+      <tr>
+        <td><span class="word_plan"></span></td>	
+        <td>
+          <select name="edit_plan" id="plan_list"></select>
+          <!--<a href="javascript:;" onClick="$('#main').append('<input type=hidden id=edit_setting value=system_plan />');pop_div(800,600,word['word_setting'],'setting');" class="plan_setting"><span class="word_setting">设置</span></a>-->
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();
+	
+	var gid=$("#edit_gid").val();
+	var gname=$("#edit_gname").val();
+	var plan_id=$("#edit_plan_id").val();
+	$("#edit_gid").remove();
+	$("#edit_gname").remove();
+	$("#edit_plan_id").remove();
+	
+	$("#gname_yuan").val(gname);
+	$("#edit_gid").val(gid);
+	
+	var gname=$.ajax({url:"index.php?do=ajax&view=monitor_group&op=get_group_name&gid="+gid,async:false});
+	$("#gname_fa").val(gname.responseText);
+	
+	if(gid==1){
+		$("#gname_fa").attr("disabled",true);
+	}else{
+		$("#gname_fa").attr("disabled",false);
+	}
+	
+	$.getJSON("index.php?do=ajax&view=monitor_list&op=get_plan",function(plan){
+		var plan_options="<option value=0>"+word['word_none']+"</option>";
+		for(i in plan){
+			if(plan_id==plan[i]['id']){
+				plan_options+="<option value="+plan[i]['id']+" selected>"+plan[i]['name']+"</option>";
+			}else{
+				plan_options+="<option value="+plan[i]['id']+">"+plan[i]['name']+"</option>";
+			}
+		}
+		$("#plan_list").html(plan_options);
+	});
+	
+	if(word['word_online']=='登录为'){
+		pop_buttons({
+			"确定":function(){
+				group_edit_enter();
+			},
+			"取消":function(){
+				pop_close("monitor_group_edit");
+			}
+		},"monitor_group_edit");
+	}else{
+		pop_buttons({
+			"Accept":function(){
+				group_edit_enter();
+			},
+			"Cancel":function(){
+				pop_close("monitor_group_edit");
+			}
+		},"monitor_group_edit");
+	}
+});
+
+//修改组
+function group_edit_enter(){
+	if(!$("#gname_fa").val()){
+		alert(word['word_name_please']);
+		return false;
+	}
+	//if($("#gname_fa").val()!=$("#gname_yuan").val()){
+		var url=encodeURI("index.php?do=ajax&view=monitor_group&op=group_name_validate&gname="+$("#gname_fa").val());
+		var is_name=$.ajax({url:url,async:false});
+		if(is_name.responseText&&$("#gname_fa").val()!=$("#gname_yuan").val()){
+			alert(word['word_name_exists']);
+			return false;
+		}
+		//alert($("#form_group_edit").serialize());
+		$.post("index.php?do=ajax&view=monitor_group&op=group_edit",$("#form_group_edit").serialize(),function(backinfo){
+			//alert(backinfo);
+		});
+	//}
+	
+	if(document.getElementById("main_iframe")){
+		get_monitor_tree();
+	}else{
+		main_load('monitor_group');
+	}
+	pop_close("monitor_group_edit");
+}
+
+</script>

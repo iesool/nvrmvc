@@ -1,0 +1,86 @@
+<input type="hidden" id="preset_mid" value="" />
+
+<div>
+  <span class="word_monitor_preset_add">添加预设点</span></div>&nbsp;
+  <input type="text" id="preset_name" value="" />&nbsp;
+  <button onClick="ptz_preset('set',$('#preset_name').val())" style="font-size:10px"><span class="word_accept">确定</span></button>
+  <button onClick="ptz_preset('clear','all')" style="font-size:10px"><span class="word_monitor_preset_clear">删除所有预设点</span></button>
+</div>
+
+<div style="margin-top:10px">
+  <table border="0" width="100%" class="pop_table">
+    <thead>
+      <tr>
+        <th width="50%"><span class="word_name">名称</span></th>
+        <th width="50%"><span class="word_operation">操作</span></th>
+      </tr>
+    </thead>
+    <tbody id="preset_table"><tr><td colspan="9"><img src='../images/ajax-loader.gif' />&nbsp;<span class="word_loading">载入中...</span></td></tr></tbody>
+  </table>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	language();	
+	
+	$("button").button();
+	
+	var mid=play_frame.get_mid();;
+	
+	$("#edit_mid").remove();
+	
+	$("#preset_mid").val(mid);
+	
+	ptz_preset("get",mid);
+	
+	if(word['word_online']=='登录为'){
+		pop_buttons({
+			"确定":function(){
+				pop_close("monitor_ptz_preset");
+			}
+		},"monitor_ptz_preset");
+	}else{
+		pop_buttons({
+			"Accept":function(){
+				pop_close("monitor_ptz_preset");
+			}
+		},"monitor_ptz_preset");
+	}
+});
+
+
+function ptz_preset(type,val){
+	switch(type){
+		case "get":
+		  get_table("preset","index.php?do=ajax&view=monitor_list&op=get_preset&mid="+val,word['word_none']);
+		break;
+		
+		case "set":
+			if(val){
+				if(confirm(word['word_monitor_preset_add_confirm'])){
+					play_frame.window.ptz('preset','set',val);
+					ptz_preset("get",$("#preset_mid").val());
+					$("#preset_name").val("");
+					play_frame.window.location.reload();
+				}
+			}else{
+				alert(word['word_name_please']);
+			}
+		break;
+		
+		case "clear":
+			if(val=="all"){
+				var conf=word['word_monitor_preset_clear_confirm'];
+			}else{
+				var conf=word['word_monitor_preset_del'];
+			}
+			
+			if(confirm(conf)){
+				play_frame.window.ptz('preset','clear',val);
+				ptz_preset("get",$("#preset_mid").val());
+				play_frame.window.location.reload();
+			}
+		break;
+	}
+}
+</script>
